@@ -29,10 +29,10 @@
               @feedback="handleFeedback"
             />
           </template>
-          
-          <!-- Typing indicator -->
-          <TypingIndicator :visible="busy" />
         </div>
+        
+        <!-- Typing indicator - moved outside messages block -->
+        <TypingIndicator :visible="busy" />
       </div>
     </main>
 
