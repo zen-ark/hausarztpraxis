@@ -262,6 +262,11 @@ onMounted(async () => {
             content: '## 💨 Lungenfunktion Vorbereitung\n\n**Patientenaufklärung:**\n- 4 Stunden vorher nicht rauchen\n- Keine bronchienerweiternden Medikamente\n- Normale Mahlzeiten erlaubt\n\n**Durchführung:**\n- Patient sitzt aufrecht\n- Nase mit Klammer verschließen\n- Mundstück fest umschließen\n- Anweisungen genau befolgen\n\n**Messungen:**\n- Vitalkapazität (VC)\n- Einsekundenkapazität (FEV1)\n- Tiffeneau-Index (FEV1/VC)\n- Peak-Flow-Messung\n\n**Qualitätskontrolle:**\n- Mindestens 3 gültige Messungen\n- Reproduzierbarkeit prüfen\n- Bei Abweichungen wiederholen'
           }
         ]
+        
+        // Ensure messages appear immediately without typing animation
+        nextTick(() => {
+          scrollToBottom()
+        })
       } else {
         // Only redirect if no first message AND no existing messages
         // @ts-ignore
@@ -785,7 +790,7 @@ const handleInfoClick = () => {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   background: transparent;
-  height: 4vh;
+  height: fill-available;
 }
 
 .ambient-gradient {
@@ -803,7 +808,7 @@ const handleInfoClick = () => {
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
-  padding: 56px 0 40px 0; /* Add bottom padding for footer note */
+  padding: 64px 0 40px 0; /* Add bottom padding for footer note */
   background: transparent;
   position: fixed;
   bottom: 0;
