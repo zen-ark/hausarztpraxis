@@ -2,6 +2,13 @@
 // @ts-ignore
 export default defineNuxtConfig({
   devtools: { enabled: true },
+  app: {
+    head: {
+      link: [
+        { rel: 'icon', type: 'image/svg+xml', href: '/favicon-animated.svg' }
+      ]
+    }
+  },
   runtimeConfig: {
     // Server-only
     supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
