@@ -28,6 +28,8 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+
 interface Props {
   placeholder?: string
   disabled?: boolean
@@ -54,9 +56,12 @@ const handleSubmit = () => {
   query.value = ''
 }
 
-// Expose focus method for parent components
+// Expose methods for parent components
 defineExpose({
-  focus: () => inputRef.value?.focus()
+  focus: () => inputRef.value?.focus(),
+  setValue: (value: string) => {
+    query.value = value
+  }
 })
 </script>
 

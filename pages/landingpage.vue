@@ -102,8 +102,7 @@ const handleSubmit = async (message: string) => {
 const selectExample = (example: string) => {
   // Set the value in the ChatInput component
   if (chatInputRef.value) {
-    // We need to access the internal query ref of ChatInput
-    // For now, we'll focus the input
+    chatInputRef.value.setValue(example)
     chatInputRef.value.focus()
   }
 }
