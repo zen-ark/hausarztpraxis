@@ -3,6 +3,15 @@
     <!-- Global App Bar -->
     <AppBar :is-thinking="busy" />
 
+    <!-- Status Chip -->
+    <div class="status-chip-container">
+      <StatusChip 
+        :status="statusChipState"
+        :error-message="error"
+        :last-update="lastStatusUpdate"
+      />
+    </div>
+
     <!-- Scrollable Chat Content -->
     <main ref="chatScrollContainer" class="chat-scroll-container">
       <div class="chat-content">
@@ -63,6 +72,7 @@ import TypingIndicator from '../components/TypingIndicator.vue'
 import AppBar from '../components/AppBar.vue'
 import IntroCard from '../components/IntroCard.vue'
 import ChatInput from '../components/ChatInput.vue'
+import StatusChip from '../components/StatusChip.vue'
 
 // Use chat composable
 const { conversationId, messages, busy, error, send, sendFeedback, clearError, reset } = useChat()
@@ -70,6 +80,10 @@ const { conversationId, messages, busy, error, send, sendFeedback, clearError, r
 // Local state
 const chatInputRef = ref<InstanceType<typeof ChatInput> | null>(null)
 const chatScrollContainer = ref<HTMLElement | null>(null)
+const lastStatusUpdate = ref<Date>(new Date())
+const isStreaming = ref(false)
+const hasError = ref(false)
+const isOffline = ref(false)
 
 // Feedback handler
 const handleFeedback = (messageId: string, helpful: boolean) => {
@@ -106,6 +120,39 @@ watch(busy, (newBusy) => {
   }
 })
 
+// Watch for error state changes
+watch(error, (newError) => {
+  hasError.value = !!newError
+  if (newError) {
+    lastStatusUpdate.value = new Date()
+    // Auto-revert error after 6 seconds
+    setTimeout(() => {
+      hasError.value = false
+    }, 6000)
+  }
+})
+
+// Watch for busy state to detect streaming
+watch(busy, (newBusy, oldBusy) => {
+  if (newBusy && !oldBusy) {
+    // Starting to think
+    lastStatusUpdate.value = new Date()
+  } else if (!newBusy && oldBusy) {
+    // Finished thinking, now streaming or done
+    isStreaming.value = false
+  }
+})
+
+// Watch for new messages to detect streaming
+watch(messages, (newMessages) => {
+  if (newMessages.length > 0) {
+    const lastMessage = newMessages[newMessages.length - 1]
+    if (lastMessage.role === 'assistant' && busy.value) {
+      isStreaming.value = true
+    }
+  }
+}, { deep: true })
+
 // Computed orb size
 const orbSize = computed(() => {
   if (typeof window === 'undefined') return 120
@@ -115,6 +162,15 @@ const orbSize = computed(() => {
 // Check if we have the first assistant message
 const hasFirstAssistantMessage = computed(() => {
   return messages.value.some(msg => msg.role === 'assistant')
+})
+
+// Status chip state logic
+const statusChipState = computed(() => {
+  if (isOffline.value) return 'offline'
+  if (hasError.value) return 'error'
+  if (isStreaming.value) return 'answering'
+  if (busy.value) return 'thinking'
+  return 'idle'
 })
 
 
@@ -264,6 +320,23 @@ const handleInfoClick = () => {
 }
 
 /* App Bar is now handled by AppBar component */
+
+/* Status Chip Container */
+.status-chip-container {
+  position: fixed;
+  top: 60px; /* AppBar height */
+  left: 0;
+  right: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  padding: 8px 24px 0;
+  pointer-events: none;
+}
+
+.status-chip-container .status-chip {
+  pointer-events: auto;
+}
 
 /* Chat container */
 .chat-container {
@@ -493,6 +566,11 @@ const handleInfoClick = () => {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .status-chip-container {
+    top: 60px; /* AppBar height on mobile */
+    padding: 6px 16px 0;
+  }
+  
   .chat-content {
     padding: 0 16px;
   }
@@ -517,7 +595,7 @@ const handleInfoClick = () => {
   }
   
   .chat-scroll-container {
-    top: 60px; /* AppBar height */
+    top: 100px; /* AppBar height + Status chip space */
     padding-top: 16px;
     padding-bottom: calc(env(safe-area-inset-bottom) + 56px + 120px);
   }
@@ -664,13 +742,13 @@ body {
 /* Scrollable Chat Content */
 .chat-scroll-container {
   position: fixed;
-  top: 60px; /* AppBar height */
+  top: 100px; /* AppBar height + Status chip space */
   left: 0;
   right: 0;
   bottom: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 24px; /* Space under AppBar */
+  padding-top: 24px; /* Space under Status chip */
   padding-bottom: calc(140px + env(safe-area-inset-bottom)); /* Composer height + safe area */
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
