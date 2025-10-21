@@ -31,7 +31,7 @@
           </template>
           
           <!-- Typing indicator -->
-          <TypingIndicator :visible="busy && messages.length > 0" />
+          <TypingIndicator :visible="busy" />
         </div>
       </div>
     </main>
@@ -602,7 +602,7 @@ const handleInfoClick = () => {
   }
   
   .chat-scroll-container {
-    top: 60px; /* AppBar height */
+    margin-top: 60px; /* AppBar height */
     padding-top: 16px;
     padding-bottom: calc(env(safe-area-inset-bottom) + 56px + 120px);
   }
@@ -687,6 +687,7 @@ const handleInfoClick = () => {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 24px 0;
+  margin-top: 60px; /* Account for fixed AppBar height */
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
@@ -715,25 +716,25 @@ const handleInfoClick = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120px;
+  height: 200px;
   background: linear-gradient(to bottom,
     transparent 0%,
-    rgba(255, 255, 255, 0.05) 20%,
-    rgba(255, 255, 255, 0.15) 40%,
-    rgba(255, 255, 255, 0.3) 60%,
-    rgba(255, 255, 255, 0.5) 80%,
-    rgba(255, 255, 255, 0.8) 100%
+    rgba(229, 236, 247, 0.2) 20%,
+    rgba(229, 236, 247, 0.5) 40%,
+    rgba(229, 236, 247, 0.8) 60%,
+    rgba(229, 236, 247, 0.9) 80%,
+    rgba(229, 236, 247, 0.95) 100%
   );
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   pointer-events: none;
-  z-index: 1;
+  z-index: 10;
 }
 
 .chat-content {
   max-width: 680px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 24px 24px 0 24px;
   width: 100%;
 }
 

@@ -9,7 +9,7 @@
   >
     <div class="typing-bubble">
       <span class="typing-text">{{ displayedText }}</span>
-      <span class="typing-cursor" v-if="isTyping">|</span>
+      <span class="typing-cursor" :class="{ 'visible': isTyping }">|</span>
     </div>
   </div>
 </template>
@@ -188,11 +188,17 @@ onUnmounted(() => {
   color: var(--blue-500);
   font-weight: bold;
   animation: blink 1s infinite;
+  opacity: 0;
+  transition: opacity 200ms ease-in-out;
+}
+
+.typing-cursor.visible {
+  opacity: 1;
 }
 
 @keyframes blink {
   0%, 50% { opacity: 1; }
-  51%, 100% { opacity: 0; }
+  51%, 100% { opacity: 0.3; }
 }
 
 /* Mobile responsive */

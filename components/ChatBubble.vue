@@ -109,7 +109,7 @@ watch(() => props.content, (newContent) => {
   display: flex;
   flex-direction: column;
   max-width: 680px;
-  margin-bottom: 16px;
+  margin-bottom: 0.75rem;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -142,7 +142,7 @@ watch(() => props.content, (newContent) => {
   line-height: 1.5;
   max-width: 600px;
   margin-left: auto;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
 }
 
 .user-message-content {
@@ -164,7 +164,7 @@ watch(() => props.content, (newContent) => {
   padding: 1rem 1.5rem;
   line-height: 1.6;
   max-width: 700px;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0;
   transition: box-shadow 220ms var(--motion-smooth);
 }
 

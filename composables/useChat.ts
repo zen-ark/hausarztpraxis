@@ -30,6 +30,10 @@ export const useChat = () => {
   const send = async (message: string) => {
     if (busy.value || !message.trim()) { return }
 
+    // Set busy state immediately for instant feedback
+    busy.value = true
+    error.value = null
+
     // Generate local ID for immediate UI update
     const localId = crypto.randomUUID()
 
@@ -49,9 +53,6 @@ export const useChat = () => {
       sources: []
     }
     messages.value.push(assistantMessage)
-
-    busy.value = true
-    error.value = null
 
     try {
       // Create abort controller for this request
