@@ -1,26 +1,105 @@
 <template>
-  <div class="typing-indicator" v-if="visible" :class="{ 'fade-out': !visible }">
-    <div class="typing-dots">
-      <span class="dot"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
+  <div 
+    class="typing-indicator" 
+    v-if="visible" 
+    :class="{ 'fade-out': !visible }"
+    role="status"
+    aria-live="polite"
+    :aria-label="currentPhrase"
+  >
+    <span class="typing-text">{{ currentPhrase }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+
 const props = defineProps<{
   visible: boolean
 }>()
+
+// German contextual phrases
+const phrases = [
+  'Ich lese die Dokumente …',
+  'Antwort wird vorbereitet …',
+  'Ich fasse die wichtigsten Punkte zusammen …',
+  'Einen Moment …',
+  'Ich prüfe die Angaben …'
+]
+
+const currentPhraseIndex = ref(0)
+const phraseRotationInterval = ref<number | null>(null)
+const prefersReducedMotion = ref(false)
+
+// Computed current phrase
+const currentPhrase = computed(() => phrases[currentPhraseIndex.value])
+
+// Rotate phrases for variety
+const startPhraseRotation = () => {
+  if (phraseRotationInterval.value) return
+  
+  phraseRotationInterval.value = setInterval(() => {
+    currentPhraseIndex.value = (currentPhraseIndex.value + 1) % phrases.length
+  }, 2000) // Change phrase every 2 seconds
+}
+
+const stopPhraseRotation = () => {
+  if (phraseRotationInterval.value) {
+    clearInterval(phraseRotationInterval.value)
+    phraseRotationInterval.value = null
+  }
+}
+
+// Watch for visibility changes
+watch(() => props.visible, (newVisible) => {
+  if (newVisible) {
+    // Reset to first phrase when becoming visible
+    currentPhraseIndex.value = 0
+    // Start rotation after a short delay
+    setTimeout(() => {
+      if (props.visible && !prefersReducedMotion.value) {
+        startPhraseRotation()
+      }
+    }, 1000)
+  } else {
+    stopPhraseRotation()
+  }
+})
+
+// Check for reduced motion preference
+onMounted(() => {
+  if (typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+    prefersReducedMotion.value = mediaQuery.matches
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      prefersReducedMotion.value = e.matches
+      if (e.matches) {
+        stopPhraseRotation()
+      }
+    }
+    
+    mediaQuery.addEventListener('change', handleChange)
+    
+    onUnmounted(() => {
+      mediaQuery.removeEventListener('change', handleChange)
+    })
+  }
+})
+
+onUnmounted(() => {
+  stopPhraseRotation()
+})
 </script>
 
 <style scoped>
 .typing-indicator {
   display: flex;
   align-items: center;
-  padding: 0;
+  justify-content: center;
+  padding: 8px 0;
   margin: 8px 0;
-  transition: opacity 150ms ease-out;
+  transition: opacity 200ms ease-in-out;
   background: transparent;
   border: none;
   box-shadow: none;
@@ -30,32 +109,30 @@ const props = defineProps<{
   opacity: 0;
 }
 
-.typing-dots {
-  display: flex;
-  gap: 4px;
-  align-items: center;
+.typing-text {
+  font-size: 14px;
+  color: var(--text-subtle);
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: center;
+  transition: opacity 200ms ease-in-out;
 }
 
-.dot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--blue-500);
-  border-radius: 50%;
-  animation: typing-bounce 1.4s infinite ease-in-out;
-}
-
-.dot:nth-child(1) { animation-delay: 0ms; }
-.dot:nth-child(2) { animation-delay: 150ms; }
-.dot:nth-child(3) { animation-delay: 300ms; }
-
-@keyframes typing-bounce {
-  0%, 80%, 100% {
-    transform: scale(0.8);
-    opacity: 0.6;
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .typing-text {
+    font-size: 13px;
   }
-  40% {
-    transform: scale(1.2);
-    opacity: 1;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .typing-indicator {
+    transition: opacity 150ms ease-out;
+  }
+  
+  .typing-text {
+    transition: opacity 150ms ease-out;
   }
 }
 </style>
