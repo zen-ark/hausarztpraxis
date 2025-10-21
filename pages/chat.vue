@@ -95,6 +95,7 @@ const isOffline = ref(false)
 const chatContentWrapper = ref<HTMLElement | null>(null)
 const chatColumn = ref<HTMLElement | null>(null)
 
+
 // Feedback handler
 const handleFeedback = (messageId: string, helpful: boolean) => {
   sendFeedback(messageId, helpful)
@@ -218,7 +219,7 @@ onMounted(async () => {
       })
     } else if (messages.value.length === 0 && !busy.value) {
       // Add sample messages for development preview
-      if (false) { // Only show sample messages when not coming from landing page
+      if (true) { // Show sample messages for testing
         messages.value = [
           {
             localId: 'sample-1',
@@ -784,6 +785,7 @@ const handleInfoClick = () => {
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
   background: transparent;
+  height: 4vh;
 }
 
 .ambient-gradient {
