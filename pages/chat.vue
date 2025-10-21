@@ -126,13 +126,7 @@ onMounted(() => {
     if (firstMessage) {
       // We have a first message, so don't redirect
       sessionStorage.removeItem('firstMessage')
-      // Add user message immediately to display
-      messages.value.push({
-        localId: crypto.randomUUID(),
-        role: 'user',
-        content: firstMessage
-      })
-      // Then send to get AI response
+      // Send directly - the send() function will add the user message
       send(firstMessage)
     } else if (messages.value.length === 0 && !busy.value) {
       // Add sample messages for development preview
