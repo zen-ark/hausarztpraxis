@@ -13,15 +13,6 @@
       </div>
     </div>
     
-    <div v-else class="pill-container">
-      <button 
-        class="intro-pill"
-        @click="handleInfoClick"
-        aria-label="Über diesen Assistenten"
-      >
-        <span class="pill-text">Info</span>
-      </button>
-    </div>
   </div>
 </template>
 

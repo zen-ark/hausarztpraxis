@@ -4,7 +4,7 @@
       <!-- Left side: Mini Orb + Title + Subtitle -->
       <div class="app-bar-left">
         <div class="mini-orb-container" :class="{ 'pulsing': isThinking }">
-          <OrbCanvas :size="20" :state="isThinking ? 'thinking' : 'idle'" />
+          <OrbCanvas :size="32" />
         </div>
         <div class="app-bar-titles">
           <h1 class="app-bar-title">Praxis-Assistent</h1>
@@ -12,9 +12,14 @@
         </div>
       </div>
       
-      <!-- Right side: Demo hint -->
+      <!-- Right side: Mode chips -->
       <div class="app-bar-right">
-        <span class="demo-hint">Demo</span>
+        <div class="mode-chip">
+          <span class="chip-text">Nur Praxis-Dokumente</span>
+        </div>
+        <div class="mode-chip">
+          <span class="chip-text">Demo</span>
+        </div>
       </div>
     </div>
     
@@ -64,8 +69,8 @@ const props = defineProps<{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 32px;
+  height: 32px;
   transition: transform var(--dur) var(--motion);
 }
 
@@ -80,8 +85,9 @@ const props = defineProps<{
 
 .app-bar-titles {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
 .app-bar-title {
@@ -103,16 +109,26 @@ const props = defineProps<{
 .app-bar-right {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 8px;
 }
 
-.demo-hint {
-  font-size: 14px;
-  color: var(--grey-600);
-  background: var(--blue-100);
-  padding: 4px 8px;
-  border-radius: 6px;
+.mode-chip {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  color: #000;
+  border: 1px solid rgba(0,0,0,0.02);
+  border-radius: 400px;
+  padding: 4px 12px;
+  font-size: 12px;
   font-weight: 500;
+  box-shadow: var(--shadow-sm);
+  height: 24px;
+}
+
+.chip-text {
+  white-space: nowrap;
 }
 
 .header-divider {
@@ -136,9 +152,10 @@ const props = defineProps<{
     font-size: 12px;
   }
   
-  .demo-hint {
-    font-size: 12px;
-    padding: 3px 6px;
+  .mode-chip {
+    padding: 3px 8px;
+    font-size: 11px;
+    height: 20px;
   }
 }
 

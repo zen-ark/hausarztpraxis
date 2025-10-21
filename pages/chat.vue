@@ -3,28 +3,6 @@
     <!-- Global App Bar -->
     <AppBar :is-thinking="busy" />
 
-    <!-- Status Chip -->
-    <div class="status-chip-container">
-      <StatusChip 
-        :status="statusChipState"
-        :error-message="error"
-        :last-update="lastStatusUpdate"
-      />
-    </div>
-
-    <!-- Mode Chips -->
-    <div class="mode-chips-container">
-      <button 
-        class="mode-chip active"
-        aria-label="Nur Praxis-Dokumente"
-      >
-        <span class="chip-text">Nur Praxis-Dokumente</span>
-      </button>
-      
-      <div class="mode-chip">
-        <span class="chip-text">Demo</span>
-      </div>
-    </div>
 
     <!-- Scrollable Chat Content -->
     <main ref="chatScrollContainer" class="chat-scroll-container">
@@ -335,83 +313,6 @@ const handleInfoClick = () => {
 
 /* App Bar is now handled by AppBar component */
 
-/* Status Chip Container */
-.status-chip-container {
-  position: fixed;
-  top: 60px; /* AppBar height */
-  left: 0;
-  right: 0;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  padding: 8px 24px 0;
-  pointer-events: none;
-}
-
-.status-chip-container .status-chip {
-  pointer-events: auto;
-}
-
-/* Mode Chips Container */
-.mode-chips-container {
-  position: fixed;
-  top: 100px; /* AppBar height + Status chip space */
-  left: 0;
-  right: 0;
-  z-index: 10;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 24px 0;
-  pointer-events: none;
-}
-
-.mode-chip {
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
-  color: #000;
-  border: 1px solid rgba(0,0,0,0.02);
-  border-radius: 400px;
-  padding: 8px 24px;
-  font-size: 12px;
-  font-weight: 500;
-  transition: all 250ms cubic-bezier(.2,.8,.2,1);
-  box-shadow: var(--shadow-sm);
-  pointer-events: auto;
-  cursor: pointer;
-  height: 32px;
-}
-
-.mode-chip.active {
-  background: rgba(255, 255, 255, 1);
-  border-color: var(--blue-300);
-  box-shadow: 
-    0 0 0 1px rgba(59, 130, 246, 0.1),
-    0 0 8px rgba(59, 130, 246, 0.2),
-    0 0 16px rgba(59, 130, 246, 0.1);
-}
-
-.mode-chip:hover {
-  background: rgba(255, 255, 255, 1);
-  border-color: var(--gray-300);
-  box-shadow: 
-    0 0 0 1px rgba(107, 114, 128, 0.1),
-    0 0 8px rgba(107, 114, 128, 0.2),
-    0 0 16px rgba(107, 114, 128, 0.1);
-  transform: translateY(-1px);
-}
-
-.mode-chip:focus-visible {
-  outline: 2px solid var(--blue-500);
-  outline-offset: 2px;
-}
-
-.chip-text {
-  white-space: nowrap;
-}
 
 /* Chat container */
 .chat-container {
@@ -641,22 +542,6 @@ const handleInfoClick = () => {
 
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .status-chip-container {
-    top: 60px; /* AppBar height on mobile */
-    padding: 6px 16px 0;
-  }
-  
-  .mode-chips-container {
-    top: 100px; /* AppBar height + Status chip space on mobile */
-    padding: 6px 16px 0;
-  }
-  
-  .mode-chip {
-    padding: 6px 16px;
-    font-size: 11px;
-    height: 28px;
-  }
-  
   .chat-content {
     padding: 0 16px;
   }
@@ -681,7 +566,7 @@ const handleInfoClick = () => {
   }
   
   .chat-scroll-container {
-    top: 140px; /* AppBar height + Status chip space + Mode chips space */
+    top: 60px; /* AppBar height */
     padding-top: 16px;
     padding-bottom: calc(env(safe-area-inset-bottom) + 56px + 120px);
   }
@@ -690,8 +575,7 @@ const handleInfoClick = () => {
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .input-group,
-  .send-button-icon,
-  .mode-chip {
+  .send-button-icon {
     transition: opacity 120ms ease;
   }
   
@@ -700,10 +584,6 @@ const handleInfoClick = () => {
   }
   
   .send-button-icon:hover:not(:disabled) {
-    transform: none;
-  }
-  
-  .mode-chip:hover {
     transform: none;
   }
 }
@@ -833,13 +713,13 @@ body {
 /* Scrollable Chat Content */
 .chat-scroll-container {
   position: fixed;
-  top: 140px; /* AppBar height + Status chip space + Mode chips space */
+  top: 60px; /* AppBar height */
   left: 0;
   right: 0;
   bottom: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 24px; /* Space under Mode chips */
+  padding-top: 24px; /* Space under AppBar */
   padding-bottom: calc(140px + env(safe-area-inset-bottom)); /* Composer height + safe area */
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
