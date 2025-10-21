@@ -595,10 +595,19 @@ const handleInfoClick = () => {
 }
 
 .footer-note {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   text-align: center;
-  padding: 24px;
-  font-size: 14px;
+  padding: 12px 24px;
+  font-size: 12px;
   color: var(--grey-600);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 20;
   margin: 0;
 }
 
@@ -792,7 +801,7 @@ const handleInfoClick = () => {
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
-  padding: 56px 0;
+  padding: 56px 0 40px 0; /* Add bottom padding for footer note */
   background: transparent;
   position: fixed;
   bottom: 0;
