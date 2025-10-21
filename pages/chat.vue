@@ -43,7 +43,9 @@
           <ChatInput
             ref="chatInputRef"
             :disabled="busy"
+            :is-responding="busy"
             @submit="handleSubmit"
+            @stop="handleStop"
           />
         </div>
       </div>
@@ -66,7 +68,7 @@ import IntroCard from '../components/IntroCard.vue'
 import ChatInput from '../components/ChatInput.vue'
 
 // Use chat composable
-const { conversationId, messages, busy, error, send, sendFeedback, clearError, reset } = useChat()
+const { conversationId, messages, busy, error, send, sendFeedback, clearError, stop, reset } = useChat()
 
 // Local state
 const chatInputRef = ref<InstanceType<typeof ChatInput> | null>(null)
@@ -81,32 +83,49 @@ const handleFeedback = (messageId: string, helpful: boolean) => {
   sendFeedback(messageId, helpful)
 }
 
-// Auto-scroll function
+// Auto-scroll functionality
+const shouldAutoScroll = ref(true)
+const isUserScrolling = ref(false)
+
+// Simple scroll to bottom function
 const scrollToBottom = () => {
-  if (chatScrollContainer.value) {
-    nextTick(() => {
-      chatScrollContainer.value!.scrollTop = chatScrollContainer.value!.scrollHeight
-    })
-  }
+  if (!chatScrollContainer.value || !shouldAutoScroll.value) return
+  
+  nextTick(() => {
+    if (chatScrollContainer.value) {
+      chatScrollContainer.value.scrollTop = chatScrollContainer.value.scrollHeight
+    }
+  })
 }
 
-// Check if user is near bottom of chat
+// Check if user is near bottom (within 100px)
 const isNearBottom = () => {
   if (!chatScrollContainer.value) return true
   const { scrollTop, scrollHeight, clientHeight } = chatScrollContainer.value
-  return scrollHeight - scrollTop - clientHeight < 100 // 100px threshold
+  return scrollHeight - scrollTop - clientHeight < 100
 }
 
-// Watch for new messages and auto-scroll only if near bottom
+// Handle user scroll events
+const handleScroll = () => {
+  isUserScrolling.value = true
+  shouldAutoScroll.value = isNearBottom()
+  
+  // Reset user scrolling flag after a delay
+  setTimeout(() => {
+    isUserScrolling.value = false
+  }, 150)
+}
+
+// Watch for new messages and auto-scroll
 watch(messages, () => {
-  if (isNearBottom()) {
+  if (shouldAutoScroll.value) {
     scrollToBottom()
   }
 }, { deep: true })
 
 // Watch for busy state changes (typing indicator)
 watch(busy, (newBusy) => {
-  if (newBusy && isNearBottom()) {
+  if (newBusy && shouldAutoScroll.value) {
     scrollToBottom()
   }
 })
@@ -244,7 +263,17 @@ onMounted(() => {
     }
   }
   window.addEventListener('keydown', handleKeydown)
-  onUnmounted(() => window.removeEventListener('keydown', handleKeydown))
+  onUnmounted(() => {
+    window.removeEventListener('keydown', handleKeydown)
+    if (chatScrollContainer.value) {
+      chatScrollContainer.value.removeEventListener('scroll', handleScroll)
+    }
+  })
+  
+  // Add scroll event listener
+  if (chatScrollContainer.value) {
+    chatScrollContainer.value.addEventListener('scroll', handleScroll)
+  }
   
   // Initial scroll to bottom
   scrollToBottom()
@@ -270,7 +299,8 @@ const validSources = (sources: string[] | undefined) => {
 const handleSubmit = async (message: string) => {
   if (!message.trim() || busy.value) return
   
-  // Always scroll to bottom when user sends message
+  // Enable auto-scroll when user sends message
+  shouldAutoScroll.value = true
   scrollToBottom()
   
   await send(message)
@@ -279,6 +309,10 @@ const handleSubmit = async (message: string) => {
   if (chatInputRef.value) {
     chatInputRef.value.focus()
   }
+}
+
+const handleStop = () => {
+  stop()
 }
 
 const handleNewChat = () => {
@@ -635,7 +669,7 @@ const handleInfoClick = () => {
   margin-bottom: 0;
 }
 
-/* Scoped Scrolling Layout */
+/* Simple Flexbox Layout */
 .chat-page {
   height: 100vh;
   display: flex;
@@ -643,119 +677,15 @@ const handleInfoClick = () => {
   overflow: hidden;
 }
 
-body {
-  overflow: hidden;
-}
-
-/* Option 2: CSS Grid Layout */
-.chat-grid-layout {
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  height: 100vh;
-  overflow: hidden;
-}
-
-.chat-grid-layout .chat-header {
-  grid-row: 1;
-  position: relative;
-  top: auto;
-}
-
-.chat-grid-layout .chat-scroll-container {
-  grid-row: 2;
-  position: relative;
-  bottom: auto;
-  top: auto;
-  padding-bottom: 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-  /* Hide scrollbar */
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
-}
-
-.chat-grid-layout .chat-scroll-container::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
-}
-
-.chat-grid-layout .composer-section {
-  grid-row: 3;
-  position: relative;
-  bottom: auto;
-  padding: 8px 24px 0;
-}
-
-/* Option 4: Flexbox with min-height */
-.chat-flex {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.chat-flex .chat-scroll-container {
-  flex: 1;
-  position: relative;
-  bottom: auto;
-  top: auto;
-  padding-bottom: 0;
-}
-
-.chat-flex .composer-section {
-  position: relative;
-  bottom: auto;
-  margin-top: auto;
-}
-
-/* AppBar is now handled by AppBar component */
-
 /* Scrollable Chat Content */
 .chat-scroll-container {
-  position: fixed;
-  top: 60px; /* AppBar height */
-  left: 0;
-  right: 0;
-  bottom: 0;
+  flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding-top: 24px; /* Space under AppBar */
-  padding-bottom: calc(140px + env(safe-area-inset-bottom)); /* Composer height + safe area */
+  padding: 24px 0;
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
-  background: var(--bg);
-  /* CSS Mask for fade effect */
-  -webkit-mask-image: linear-gradient(to bottom,
-    black 0%,
-    black calc(100% - 200px),
-    transparent 100%
-  );
-  mask-image: linear-gradient(to bottom,
-    black 0%,
-    black calc(100% - 200px),
-    transparent 100%
-  );
-}
-
-/* Progressive blur overlay */
-.chat-scroll-container::before {
-  content: '';
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 120px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 20%,
-    rgba(255, 255, 255, 0.15) 40%,
-    rgba(255, 255, 255, 0.3) 60%,
-    rgba(255, 255, 255, 0.5) 80%,
-    rgba(255, 255, 255, 0.8) 100%
-  );
-  backdrop-filter: blur(1px);
-  -webkit-backdrop-filter: blur(1px);
-  pointer-events: none;
-  z-index: 1;
 }
 
 .chat-scroll-container::-webkit-scrollbar {
@@ -769,20 +699,11 @@ body {
   width: 100%;
 }
 
-.chat-content .messages:first-child {
-  margin-top: 0;
-}
-
-
 /* Fixed Input Bar */
 .composer-section {
-  position: fixed;
-  bottom: calc(env(safe-area-inset-bottom) + 56px);
-  left: 0;
-  right: 0;
-  z-index: 2;
-  background: transparent;
-  padding: var(--space-2) var(--space-6) 0;
+  flex-shrink: 0;
+  padding: 20px 0;
+  background: var(--bg);
 }
 
 

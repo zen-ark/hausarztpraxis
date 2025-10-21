@@ -15,6 +15,7 @@ export const useChat = () => {
   const messages = ref<ChatMessage[]>([])
   const busy = ref(false)
   const error = ref<string | null>(null)
+  const abortController = ref<AbortController | null>(null)
 
   // Load conversationId from sessionStorage on mount
   onMounted(() => {
@@ -53,6 +54,9 @@ export const useChat = () => {
     error.value = null
 
     try {
+      // Create abort controller for this request
+      abortController.value = new AbortController()
+      
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -61,7 +65,8 @@ export const useChat = () => {
         body: JSON.stringify({
           question: message,
           k: 12
-        })
+        }),
+        signal: abortController.value.signal
       })
 
       if (!response.ok) {
@@ -108,12 +113,17 @@ export const useChat = () => {
       }
     } catch (err: unknown) {
       console.error('Chat API error:', err)
-      error.value = 'Ups — Anfrage fehlgeschlagen. Bitte erneut senden.'
-
-      // Update assistant message with error
-      assistantMessage.content = error.value
+      
+      // Check if it was aborted
+      if (err instanceof Error && err.name === 'AbortError') {
+        assistantMessage.content = 'Antwort abgebrochen.'
+      } else {
+        error.value = 'Ups — Anfrage fehlgeschlagen. Bitte erneut senden.'
+        assistantMessage.content = error.value
+      }
     } finally {
       busy.value = false
+      abortController.value = null
     }
   }
 
@@ -136,11 +146,23 @@ export const useChat = () => {
     error.value = null
   }
 
+  const stop = () => {
+    if (abortController.value) {
+      abortController.value.abort()
+    }
+  }
+
   const reset = () => {
+    // Stop any ongoing request
+    if (abortController.value) {
+      abortController.value.abort()
+    }
+    
     conversationId.value = null
     messages.value = []
     busy.value = false
     error.value = null
+    abortController.value = null
 
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('conversationId')
@@ -156,6 +178,7 @@ export const useChat = () => {
     send,
     sendFeedback,
     clearError,
+    stop,
     reset
   }
 }

@@ -12,8 +12,9 @@
         aria-label="Frage eingeben"
       />
       
-      <!-- Send Button -->
+      <!-- Send/Stop Button -->
       <button
+        v-if="!isResponding"
         type="submit"
         :disabled="!query.trim() || disabled"
         class="send-button-icon"
@@ -21,6 +22,19 @@
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 19V5M5 12L12 5L19 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      
+      <!-- Stop Button -->
+      <button
+        v-else
+        type="button"
+        @click="handleStop"
+        class="stop-button-icon"
+        aria-label="Antwort stoppen"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="6" width="12" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
         </svg>
       </button>
     </div>
@@ -33,15 +47,18 @@ import { ref } from 'vue'
 interface Props {
   placeholder?: string
   disabled?: boolean
+  isResponding?: boolean
 }
 
 interface Emits {
   (e: 'submit', value: string): void
+  (e: 'stop'): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
   placeholder: 'Frage eingeben …',
-  disabled: false
+  disabled: false,
+  isResponding: false
 })
 
 const emit = defineEmits<Emits>()
@@ -54,6 +71,10 @@ const handleSubmit = () => {
   
   emit('submit', query.value)
   query.value = ''
+}
+
+const handleStop = () => {
+  emit('stop')
 }
 
 // Expose methods for parent components
@@ -152,9 +173,40 @@ defineExpose({
   box-shadow: var(--shadow-sm);
 }
 
+/* Stop Button */
+.stop-button-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 400px;
+  background: #fff;
+  color: #ef4444;
+  border: 1px solid rgba(0,0,0,0.02);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 250ms cubic-bezier(.2,.8,.2,1);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.stop-button-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.stop-button-icon:hover {
+  background: #ef4444;
+  color: white;
+  border: 1px solid #ef4444;
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
-  .send-button-icon {
+  .send-button-icon,
+  .stop-button-icon {
     width: 36px;
     height: 36px;
   }
@@ -167,7 +219,8 @@ defineExpose({
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .input-group,
-  .send-button-icon {
+  .send-button-icon,
+  .stop-button-icon {
     transition: opacity 120ms ease;
   }
   
@@ -175,7 +228,8 @@ defineExpose({
     transform: none;
   }
   
-  .send-button-icon:hover:not(:disabled) {
+  .send-button-icon:hover:not(:disabled),
+  .stop-button-icon:hover {
     transform: none;
   }
 }
