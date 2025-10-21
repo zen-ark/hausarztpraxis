@@ -5,9 +5,12 @@
     :class="{ 'fade-out': !visible }"
     role="status"
     aria-live="polite"
-    :aria-label="currentPhrase"
+    :aria-label="displayedText"
   >
-    <span class="typing-text">{{ currentPhrase }}</span>
+    <div class="typing-bubble">
+      <span class="typing-text">{{ displayedText }}</span>
+      <span class="typing-cursor" v-if="isTyping">|</span>
+    </div>
   </div>
 </template>
 
@@ -30,9 +33,39 @@ const phrases = [
 const currentPhraseIndex = ref(0)
 const phraseRotationInterval = ref<number | null>(null)
 const prefersReducedMotion = ref(false)
+const displayedText = ref('')
+const isTyping = ref(false)
+const currentPhrase = ref('')
 
 // Computed current phrase
-const currentPhrase = computed(() => phrases[currentPhraseIndex.value])
+const currentPhraseComputed = computed(() => phrases[currentPhraseIndex.value])
+
+// Typewriter effect for current phrase
+const startTypewriter = (phrase: string) => {
+  displayedText.value = ''
+  isTyping.value = true
+  
+  if (prefersReducedMotion.value) {
+    // Show text immediately for reduced motion
+    displayedText.value = phrase
+    isTyping.value = false
+    return
+  }
+  
+  let currentIndex = 0
+  
+  const typeNextChar = () => {
+    if (currentIndex < phrase.length) {
+      displayedText.value = phrase.substring(0, currentIndex + 1)
+      currentIndex++
+      setTimeout(typeNextChar, 30) // 30ms per character for natural typing speed
+    } else {
+      isTyping.value = false
+    }
+  }
+  
+  typeNextChar()
+}
 
 // Rotate phrases for variety
 const startPhraseRotation = () => {
@@ -40,7 +73,9 @@ const startPhraseRotation = () => {
   
   phraseRotationInterval.value = setInterval(() => {
     currentPhraseIndex.value = (currentPhraseIndex.value + 1) % phrases.length
-  }, 2000) // Change phrase every 2 seconds
+    currentPhrase.value = phrases[currentPhraseIndex.value]
+    startTypewriter(currentPhrase.value)
+  }, 3000) // Change phrase every 3 seconds
 }
 
 const stopPhraseRotation = () => {
@@ -55,14 +90,19 @@ watch(() => props.visible, (newVisible) => {
   if (newVisible) {
     // Reset to first phrase when becoming visible
     currentPhraseIndex.value = 0
+    currentPhrase.value = phrases[0]
+    startTypewriter(currentPhrase.value)
+    
     // Start rotation after a short delay
     setTimeout(() => {
       if (props.visible && !prefersReducedMotion.value) {
         startPhraseRotation()
       }
-    }, 1000)
+    }, 2000)
   } else {
     stopPhraseRotation()
+    displayedText.value = ''
+    isTyping.value = false
   }
 })
 
@@ -95,10 +135,10 @@ onUnmounted(() => {
 <style scoped>
 .typing-indicator {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 0;
-  margin: 8px 0;
+  align-items: flex-start;
+  justify-content: flex-start;
+  max-width: 680px;
+  margin-bottom: 16px;
   transition: opacity 200ms ease-in-out;
   background: transparent;
   border: none;
@@ -109,17 +149,50 @@ onUnmounted(() => {
   opacity: 0;
 }
 
+.typing-bubble {
+  background: #FFFFFF;
+  color: var(--text);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  padding: 1rem 1.5rem;
+  line-height: 1.6;
+  max-width: 700px;
+  margin-bottom: 0.75rem;
+  transition: box-shadow 220ms var(--motion-smooth);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .typing-text {
   font-size: 14px;
   color: var(--text-subtle);
   font-weight: 400;
   line-height: 1.5;
-  text-align: center;
   transition: opacity 200ms ease-in-out;
+}
+
+.typing-cursor {
+  color: var(--blue-500);
+  font-weight: bold;
+  animation: blink 1s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
 }
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+  .typing-indicator {
+    max-width: 90%;
+  }
+  
+  .typing-bubble {
+    padding: 0.75rem 1rem;
+  }
+  
   .typing-text {
     font-size: 13px;
   }
@@ -133,6 +206,10 @@ onUnmounted(() => {
   
   .typing-text {
     transition: opacity 150ms ease-out;
+  }
+  
+  .typing-cursor {
+    animation: none;
   }
 }
 </style>
