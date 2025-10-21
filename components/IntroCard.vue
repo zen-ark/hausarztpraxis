@@ -13,23 +13,24 @@
       </div>
     </div>
     
-    <button 
-      v-else
-      class="intro-pill"
-      @click="handleInfoClick"
-      aria-label="Über diesen Assistenten"
-    >
-      <div class="pill-icon">
-        <OrbCanvas :size="16" state="idle" />
+    <div v-else class="pill-container">
+      <button 
+        class="intro-pill"
+        @click="handleInfoClick"
+        aria-label="Über diesen Assistenten"
+      >
+        <span class="pill-text">Nur Praxis-Dokumente</span>
+      </button>
+      
+      <div class="demo-pill">
+        <span class="pill-text">Demo</span>
       </div>
-      <span class="pill-text">Nur Praxis-Dokumente</span>
-    </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import OrbCanvas from './OrbCanvas.vue'
 
 const props = defineProps<{
   isCollapsed: boolean
@@ -84,29 +85,62 @@ const handleInfoClick = () => {
   color: var(--blue-800);
 }
 
-.intro-pill {
+.pill-container {
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.9);
+  animation: pillSlideIn 200ms var(--motion) ease-out;
+}
+
+.intro-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
   color: var(--blue-700);
-  border: 1px solid var(--blue-200);
-  border-radius: var(--r-pill);
-  padding: 6px 12px;
+  border: 1px solid rgba(0,0,0,0.02);
+  border-radius: 400px;
+  padding: 8px 12px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--dur) var(--motion);
-  backdrop-filter: blur(8px);
+  transition: all 250ms cubic-bezier(.2,.8,.2,1);
   box-shadow: var(--shadow-sm);
-  animation: pillSlideIn 200ms var(--motion) ease-out;
+}
+
+.demo-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  color: var(--gray-600);
+  border: 1px solid rgba(0,0,0,0.02);
+  border-radius: 400px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 250ms cubic-bezier(.2,.8,.2,1);
+  box-shadow: var(--shadow-sm);
 }
 
 .intro-pill:hover {
   background: rgba(255, 255, 255, 1);
   border-color: var(--blue-300);
+  box-shadow: 
+    0 0 0 1px rgba(59, 130, 246, 0.1),
+    0 0 8px rgba(59, 130, 246, 0.2),
+    0 0 16px rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+}
+
+.demo-pill:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--gray-300);
+  box-shadow: 
+    0 0 0 1px rgba(107, 114, 128, 0.1),
+    0 0 8px rgba(107, 114, 128, 0.2),
+    0 0 16px rgba(107, 114, 128, 0.1);
+  transform: translateY(-1px);
 }
 
 .intro-pill:focus-visible {
@@ -114,12 +148,6 @@ const handleInfoClick = () => {
   outline-offset: 2px;
 }
 
-.pill-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
 
 .pill-text {
   white-space: nowrap;
@@ -182,8 +210,9 @@ const handleInfoClick = () => {
     font-size: 13px;
   }
   
-  .intro-pill {
-    padding: 5px 10px;
+  .intro-pill,
+  .demo-pill {
+    padding: 6px 10px;
     font-size: 11px;
   }
 }
@@ -198,9 +227,13 @@ const handleInfoClick = () => {
     animation: none;
   }
   
-  .intro-pill {
+  .pill-container {
     animation: none;
-    transition: opacity 140ms ease;
+  }
+  
+  .intro-pill,
+  .demo-pill {
+    transition: opacity 120ms ease;
   }
   
   .intro-card.collapsed {

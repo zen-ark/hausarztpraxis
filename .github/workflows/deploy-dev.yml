@@ -1,0 +1,42 @@
+name: Deploy to Development Site
+
+on:
+  push:
+    branches: [ develop ]
+  workflow_dispatch:
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build for development
+      run: npm run build
+      
+    - name: Deploy to Development Site
+      run: |
+        echo "🔧 Deploying to DEVELOPMENT site..."
+        echo "Environment: DEVELOPMENT"
+        echo "Branch: develop"
+        # Add your dev deployment commands here
+        # Examples:
+        # - Deploy to Vercel preview: vercel
+        # - Deploy to Netlify preview: netlify deploy
+        # - Deploy to dev server: rsync, scp, etc.
+        
+    - name: Notify deployment
+      run: |
+        echo "✅ Development site deployment completed!"
+        echo "🧪 Dev site should be available at your development URL"
