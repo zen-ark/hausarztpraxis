@@ -761,7 +761,7 @@ const handleInfoClick = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 4vh;
+  height: 12vh;
   z-index: 1;
   pointer-events: none;
 }
@@ -795,7 +795,7 @@ const handleInfoClick = () => {
   padding: 20px 0;
   background: transparent;
   position: relative;
-  z-index: 2;
+  z-index: 10;
 }
 
 
