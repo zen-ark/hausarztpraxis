@@ -193,10 +193,7 @@ onMounted(() => {
 .composer-card {
   width: 100%;
   max-width: 640px;
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: transparent;
   padding: 0;
   transition: all 250ms cubic-bezier(.2,.8,.2,1);
 }

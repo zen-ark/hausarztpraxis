@@ -41,6 +41,14 @@
       </div>
     </main>
 
+    <!-- Bottom Ambient Section -->
+    <div class="bottom-ambient">
+      <!-- Bottom layer: Background blur -->
+      <div class="ambient-blur"></div>
+      <!-- Top layer: Gradient -->
+      <div class="ambient-gradient"></div>
+    </div>
+
     <!-- Fixed Input Bar -->
     <div class="composer-section">
       <div class="chat-input-wrapper">
@@ -747,14 +755,45 @@ const handleInfoClick = () => {
 }
 
 
+/* Bottom Ambient Section */
+.bottom-ambient {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.ambient-blur {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  background: transparent;
+}
+
+.ambient-gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    var(--bg) 100%
+  );
+}
+
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
   padding: 20px 0;
-  background: rgba(229, 236, 247, 0.8);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(229, 236, 247, 0.2);
+  background: var(--bg);
   position: relative;
   z-index: 2;
 }
