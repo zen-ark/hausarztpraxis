@@ -137,6 +137,7 @@ onMounted(() => {
   z-index: -1;
 }
 
+/* Layer 1: 200px gradient overlay */
 .background-gradient::after {
   content: '';
   position: absolute;
@@ -146,11 +147,24 @@ onMounted(() => {
   height: 200px;
   background: linear-gradient(to bottom,
     transparent 0%,
-    rgba(229, 236, 247, 0.95) 100%
+    rgba(229, 236, 247, 1) 100%
   );
-  filter: blur(2px);
   pointer-events: none;
-  z-index: -1;
+  z-index: 1;
+}
+
+/* Layer 2: 120px blur overlay */
+.background-gradient::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
+  pointer-events: none;
+  z-index: 2;
 }
 
 /* ===================================
