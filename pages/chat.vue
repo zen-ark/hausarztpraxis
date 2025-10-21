@@ -709,10 +709,10 @@ const handleInfoClick = () => {
 
 /* Simple Flexbox Layout */
 .chat-page {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
 }
 
 /* Scrollable Chat Content */
@@ -736,7 +736,7 @@ const handleInfoClick = () => {
 .chat-content-wrapper {
   position: relative;
   width: 100%;
-  height: 100%;
+  min-height: 100%;
 }
 
 /* Chat column container */
@@ -762,7 +762,7 @@ const handleInfoClick = () => {
   left: 0;
   right: 0;
   height: 12vh;
-  z-index: 1;
+  z-index: 5;
   pointer-events: none;
 }
 
@@ -795,7 +795,7 @@ const handleInfoClick = () => {
   padding: 20px 0;
   background: transparent;
   position: relative;
-  z-index: 10;
+  z-index: 15;
 }
 
 
