@@ -137,32 +137,32 @@ onMounted(() => {
   z-index: -1;
 }
 
-/* Layer 1: 200px gradient overlay */
-.background-gradient::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(229, 236, 247, 1) 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Layer 2: 120px blur overlay */
+/* Layer 1 (bottom): Blur overlay */
 .background-gradient::before {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 120px;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  height: 5vh;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Layer 2 (top): Gradient overlay */
+.background-gradient::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 5vh;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(229, 236, 247, 1) 100%
+  );
   pointer-events: none;
   z-index: 2;
 }
