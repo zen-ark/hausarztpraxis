@@ -7,11 +7,12 @@
     <!-- Scrollable Chat Content -->
     <main ref="chatScrollContainer" class="chat-scroll-container">
       <div ref="chatContentWrapper" class="chat-content-wrapper">
-        <!-- Ambient layers -->
-        <div data-ambient="blur" class="ambient-blur"></div>
-        <div data-ambient="gradient" class="ambient-gradient"></div>
-        
-        <div class="chat-content">
+        <!-- Chat column container -->
+        <div ref="chatColumn" id="chat-column" class="chat-column">
+          <!-- Ambient gradient layer -->
+          <div data-ambient="gradient" class="ambient-gradient"></div>
+          
+          <div class="chat-content">
           <!-- Intro Card (shows initially, collapses after first assistant message) -->
           <IntroCard 
             :is-collapsed="hasFirstAssistantMessage" 
@@ -38,6 +39,7 @@
           
           <!-- Typing indicator - moved outside messages block -->
           <TypingIndicator :visible="busy" />
+          </div>
         </div>
       </div>
     </main>
@@ -85,68 +87,57 @@ const hasError = ref(false)
 const isOffline = ref(false)
 
 // Ambient layers state
-const ambientBlurHeight = ref('18vh')
-const ambientGradientHeight = ref('22vh')
+const gradientHeight = ref('22vh')
 const chatContentWrapper = ref<HTMLElement | null>(null)
+const chatColumn = ref<HTMLElement | null>(null)
 
 // Feedback handler
 const handleFeedback = (messageId: string, helpful: boolean) => {
   sendFeedback(messageId, helpful)
 }
 
-// Ambient layers height calculation
-const updateAmbientHeights = () => {
-  if (!chatContentWrapper.value || !chatInputRef.value) return
+// Ambient gradient height calculation
+const updateGradientHeight = () => {
+  if (!chatColumn.value || !chatInputRef.value) return
   
-  const wrapper = chatContentWrapper.value
+  const column = chatColumn.value
   const inputElement = chatInputRef.value.$el || chatInputRef.value
   
   if (!inputElement) return
   
-  const wrapperRect = wrapper.getBoundingClientRect()
+  const columnRect = column.getBoundingClientRect()
   const inputRect = inputElement.getBoundingClientRect()
   
-  // Calculate input center relative to wrapper
-  const inputCenterY = inputRect.top + (inputRect.height / 2) - wrapperRect.top
+  // Calculate input center relative to column
+  const inputCenterY = inputRect.top + (inputRect.height / 2) - columnRect.top
   
   // Get viewport width for responsive calculations
   const viewportWidth = window.innerWidth
   
-  // Calculate base heights based on breakpoints
-  let blurHeight, gradientHeight
+  // Calculate base height based on breakpoints
+  let baseHeight
   
   if (viewportWidth >= 1024) {
-    // Desktop
-    blurHeight = Math.min(22, Math.max(14, 18)) // clamp(14vh, 18vh, 22vh)
-    gradientHeight = Math.min(28, Math.max(18, 22)) // clamp(18vh, 22vh, 28vh)
+    // Desktop: clamp(18vh, 22vh, 28vh)
+    baseHeight = Math.min(28, Math.max(18, 22))
   } else if (viewportWidth >= 640) {
-    // Tablet
-    blurHeight = Math.min(26, Math.max(16, 20)) // clamp(16vh, 20vh, 26vh)
-    gradientHeight = Math.min(30, Math.max(20, 24)) // clamp(20vh, 24vh, 30vh)
+    // Tablet: clamp(20vh, 24vh, 30vh)
+    baseHeight = Math.min(30, Math.max(20, 24))
   } else {
-    // Mobile
-    blurHeight = Math.min(30, Math.max(18, 22)) // clamp(18vh, 22vh, 30vh)
-    gradientHeight = Math.min(34, Math.max(22, 28)) // clamp(22vh, 28vh, 34vh)
+    // Mobile: clamp(22vh, 28vh, 34vh)
+    baseHeight = Math.min(34, Math.max(22, 28))
   }
   
   // Convert to pixels and cap at input center
-  const blurHeightPx = (blurHeight / 100) * window.innerHeight
-  const gradientHeightPx = (gradientHeight / 100) * window.innerHeight
+  const baseHeightPx = (baseHeight / 100) * window.innerHeight
+  const maxHeight = Math.min(baseHeightPx, inputCenterY)
   
-  // Cap heights at input center
-  const maxBlurHeight = Math.min(blurHeightPx, inputCenterY)
-  const maxGradientHeight = Math.min(gradientHeightPx, inputCenterY)
+  // Convert back to vh and set CSS variable
+  const finalHeight = (maxHeight / window.innerHeight) * 100
+  gradientHeight.value = `${finalHeight}vh`
   
-  // Convert back to vh and set CSS variables
-  const finalBlurHeight = (maxBlurHeight / window.innerHeight) * 100
-  const finalGradientHeight = (maxGradientHeight / window.innerHeight) * 100
-  
-  ambientBlurHeight.value = `${finalBlurHeight}vh`
-  ambientGradientHeight.value = `${finalGradientHeight}vh`
-  
-  // Set CSS custom properties
-  wrapper.style.setProperty('--ambient-blur-h', ambientBlurHeight.value)
-  wrapper.style.setProperty('--ambient-grad-h', ambientGradientHeight.value)
+  // Set CSS custom property
+  column.style.setProperty('--grad-h', gradientHeight.value)
 }
 
 // Auto-scroll functionality
@@ -348,16 +339,16 @@ onMounted(async () => {
   
   // Add resize listener for ambient layers
   const handleResize = () => {
-    updateAmbientHeights()
+    updateGradientHeight()
   }
   window.addEventListener('resize', handleResize)
   
   // Initial scroll to bottom
   scrollToBottom()
   
-  // Initial ambient heights calculation
+  // Initial gradient height calculation
   nextTick(() => {
-    updateAmbientHeights()
+    updateGradientHeight()
   })
 })
 
@@ -791,42 +782,33 @@ const handleInfoClick = () => {
   height: 100%;
 }
 
+/* Chat column container */
+.chat-column {
+  width: min(100%, var(--col-max));
+  margin-inline: auto;
+  padding: var(--gutter);
+  position: relative;
+  z-index: 2;
+}
+
 .chat-content {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 24px 24px 0 24px;
   width: 100%;
   position: relative;
   z-index: 3;
 }
 
-/* Ambient layers */
-.ambient-blur {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: var(--ambient-blur-h, 18vh);
-  backdrop-filter: blur(var(--ambient-blur, 18px)) saturate(1.05);
-  -webkit-backdrop-filter: blur(var(--ambient-blur, 18px)) saturate(1.05);
-  pointer-events: none;
-  z-index: 1;
-  will-change: transform, backdrop-filter;
-  contain: layout paint;
-  background: rgba(255, 255, 255, 0.03);
-}
-
+/* Ambient gradient layer */
 .ambient-gradient {
   position: absolute;
   inset-inline: 0;
   bottom: 0;
-  height: var(--ambient-grad-h, 22vh);
+  height: var(--grad-h, 22vh);
   background: linear-gradient(to top, 
-    var(--bg) 70%, 
-    var(--bg) 80%, 
+    var(--bg) 0%, 
     transparent 100%
   );
   pointer-events: none;
-  z-index: 2;
+  z-index: 1;
   will-change: transform;
   contain: layout paint;
 }

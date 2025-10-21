@@ -108,11 +108,12 @@ watch(() => props.content, (newContent) => {
 .message-wrapper {
   display: flex;
   flex-direction: column;
-  max-width: min(68ch, 90vw);
+  max-inline-size: min(var(--bubble-ch), calc(100% - 2 * var(--gutter)));
   margin-bottom: 0.75rem;
   background: transparent;
   border: none;
   box-shadow: none;
+  box-sizing: border-box;
 }
 
 .message-wrapper[data-role="assistant"] {
@@ -247,21 +248,23 @@ watch(() => props.content, (newContent) => {
 
 
 /* Mobile responsive */
-@media (max-width: 768px) {
+@media (max-width: 640px) {
   .message-wrapper {
-    max-width: 100%;
+    max-inline-size: 100%;
   }
   
   .bubble.user,
   .bubble.assistant {
     padding: 0.75rem 1rem;
+    hyphens: auto;
+    word-break: break-word;
   }
 }
 
 /* Tablet and desktop - maintain readable width */
-@media (min-width: 769px) {
+@media (min-width: 641px) {
   .message-wrapper {
-    max-width: min(68ch, 90vw);
+    max-inline-size: min(var(--bubble-ch), calc(100% - 2 * var(--gutter)));
   }
 }
 </style>

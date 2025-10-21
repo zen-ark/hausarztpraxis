@@ -105,6 +105,11 @@
   
   /* Ambient effects */
   --ambient-blur: 18px;
+  
+  /* Chat layout */
+  --gutter: 24px;
+  --col-max: 820px;
+  --bubble-ch: 68ch;
 }
 
 * {
@@ -142,6 +147,10 @@ html, body, #__nuxt {
 
 /* Mobile responsive for inputs */
 @media (max-width: 768px) {
+  :root {
+    --gutter: 16px;
+  }
+  
   .composer-input,
   .chat-input {
     font-size: 16px; /* Prevent zoom on iOS */
