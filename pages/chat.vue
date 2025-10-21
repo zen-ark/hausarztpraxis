@@ -778,44 +778,12 @@ const handleInfoClick = () => {
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
   background: var(--bg);
-  /* CSS Mask for fade effect */
-  -webkit-mask-image: linear-gradient(to bottom,
-    black 0%,
-    black calc(100% - 200px),
-    transparent 100%
-  );
-  mask-image: linear-gradient(to bottom,
-    black 0%,
-    black calc(100% - 200px),
-    transparent 100%
-  );
 }
 
 .chat-scroll-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* Progressive blur overlay */
-.chat-scroll-container::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 200px;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(229, 236, 247, 0.2) 20%,
-    rgba(229, 236, 247, 0.5) 40%,
-    rgba(229, 236, 247, 0.8) 60%,
-    rgba(229, 236, 247, 0.9) 80%,
-    rgba(229, 236, 247, 0.95) 100%
-  );
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
-  pointer-events: none;
-  z-index: 10;
-}
 
 .chat-content-wrapper {
   position: relative;
