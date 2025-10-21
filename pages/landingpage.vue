@@ -28,6 +28,7 @@
       
       <!-- Example queries -->
       <div class="examples-section">
+        <div class="examples-divider"></div>
         <h3 class="examples-title">Beispiel-Anfragen:</h3>
         <div class="examples-list">
           <button 
@@ -227,23 +228,29 @@ onMounted(() => {
    =================================== */
 
 .examples-section {
-  margin: 8px 0 0 0; /* 1 × 8pt top spacing */
+  margin: 28px 0 0 0; /* 3.5 × 8pt - more breathing room from input */
   width: 100%;
   max-width: 640px;
 }
 
+.examples-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(107, 114, 128, 0.1) 20%, rgba(107, 114, 128, 0.1) 80%, transparent 100%);
+  margin: 0 0 24px 0; /* 3 × 8pt - creates visual separation */
+}
+
 .examples-title {
   font-size: 14px;
-  font-weight: 600;
-  color: #6b7280;
-  margin: 0 0 12px 0;
+  font-weight: 500; /* Slightly lighter weight */
+  color: rgba(107, 114, 128, 0.75); /* 75% opacity for softer appearance */
+  margin: 0 0 10px 0; /* 1.25 × 8pt - tighter spacing below heading */
   text-align: left;
 }
 
 .examples-list {
   display: flex;
   flex-direction: column;
-  gap: 8px; /* 1 × 8pt between examples */
+  gap: 14px; /* 1.75 × 8pt - consistent spacing between examples */
 }
 
 .example-query {
@@ -259,6 +266,7 @@ onMounted(() => {
   text-align: left;
   width: 100%;
   gap: 8px; /* 1 × 8pt between text and icon */
+  padding-right: 16px; /* 2 × 8pt - more breathing room for arrow icons */
 }
 
 .example-query:hover {
@@ -362,15 +370,20 @@ onMounted(() => {
   }
   
   .examples-section {
-    margin: 4px 0 0 0;
+    margin: 20px 0 0 0; /* Maintain breathing room on mobile */
+  }
+  
+  .examples-divider {
+    margin: 0 0 16px 0; /* 2 × 8pt on mobile */
   }
   
   .examples-list {
-    gap: 6px;
+    gap: 12px; /* 1.5 × 8pt on mobile */
   }
   
   .example-query {
     padding: 8px 0; /* 1 × 8pt */
+    padding-right: 12px; /* 1.5 × 8pt on mobile */
   }
 }
 
