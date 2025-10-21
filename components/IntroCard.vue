@@ -95,38 +95,52 @@ const handleInfoClick = () => {
 .intro-pill {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
   color: var(--blue-700);
-  border: 1px solid var(--blue-200);
-  border-radius: var(--r-pill);
-  padding: 6px 12px;
+  border: 1px solid rgba(0,0,0,0.02);
+  border-radius: 400px;
+  padding: 8px 12px;
   font-size: 12px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--dur) var(--motion);
-  backdrop-filter: blur(8px);
+  transition: all 250ms cubic-bezier(.2,.8,.2,1);
   box-shadow: var(--shadow-sm);
 }
 
 .demo-pill {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
   color: var(--gray-600);
-  border: 1px solid var(--gray-200);
-  border-radius: var(--r-pill);
-  padding: 6px 12px;
+  border: 1px solid rgba(0,0,0,0.02);
+  border-radius: 400px;
+  padding: 8px 12px;
   font-size: 12px;
   font-weight: 500;
-  backdrop-filter: blur(8px);
+  transition: all 250ms cubic-bezier(.2,.8,.2,1);
   box-shadow: var(--shadow-sm);
 }
 
 .intro-pill:hover {
   background: rgba(255, 255, 255, 1);
   border-color: var(--blue-300);
+  box-shadow: 
+    0 0 0 1px rgba(59, 130, 246, 0.1),
+    0 0 8px rgba(59, 130, 246, 0.2),
+    0 0 16px rgba(59, 130, 246, 0.1);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
+}
+
+.demo-pill:hover {
+  background: rgba(255, 255, 255, 1);
+  border-color: var(--gray-300);
+  box-shadow: 
+    0 0 0 1px rgba(107, 114, 128, 0.1),
+    0 0 8px rgba(107, 114, 128, 0.2),
+    0 0 16px rgba(107, 114, 128, 0.1);
+  transform: translateY(-1px);
 }
 
 .intro-pill:focus-visible {
@@ -198,7 +212,7 @@ const handleInfoClick = () => {
   
   .intro-pill,
   .demo-pill {
-    padding: 5px 10px;
+    padding: 6px 10px;
     font-size: 11px;
   }
 }
@@ -219,7 +233,7 @@ const handleInfoClick = () => {
   
   .intro-pill,
   .demo-pill {
-    transition: opacity 140ms ease;
+    transition: opacity 120ms ease;
   }
   
   .intro-card.collapsed {
