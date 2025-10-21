@@ -19,12 +19,8 @@
         @click="handleInfoClick"
         aria-label="Über diesen Assistenten"
       >
-        <span class="pill-text">Nur Praxis-Dokumente</span>
+        <span class="pill-text">Info</span>
       </button>
-      
-      <div class="demo-pill">
-        <span class="pill-text">Demo</span>
-      </div>
     </div>
   </div>
 </template>
