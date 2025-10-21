@@ -720,7 +720,7 @@ const handleInfoClick = () => {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 24px 0;
+  padding: 24px 0 120px 0; /* Add bottom padding for fixed input */
   margin-top: 60px; /* Account for fixed AppBar height */
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
@@ -794,7 +794,10 @@ const handleInfoClick = () => {
   flex-shrink: 0;
   padding: 20px 0;
   background: transparent;
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 15;
 }
 
