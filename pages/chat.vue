@@ -182,7 +182,7 @@ onMounted(() => {
       } else {
         // Only redirect if no first message AND no existing messages
         // @ts-ignore
-        navigateTo('/')
+        navigateTo('/landingpage')
       }
     } else if (chatInputRef.value) {
       chatInputRef.value.focus()
@@ -191,7 +191,7 @@ onMounted(() => {
     // SSR fallback - redirect if no messages
     if (messages.value.length === 0 && !busy.value) {
       // @ts-ignore
-      navigateTo('/')
+      navigateTo('/landingpage')
     }
   }
   
@@ -248,7 +248,7 @@ const handleNewChat = () => {
   
   reset()
   // @ts-ignore
-  navigateTo('/')
+  navigateTo('/landingpage')
 }
 
 // Settings functionality removed

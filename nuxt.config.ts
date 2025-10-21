@@ -12,5 +12,11 @@ export default defineNuxtConfig({
       supabaseUrl: process.env.NUXT_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
     }
+  },
+  // Add redirect from root to landing page
+  nitro: {
+    routeRules: {
+      '/': { redirect: '/landingpage' }
+    }
   }
 })

@@ -29,7 +29,7 @@ const handleNewChat = () => {
   }
   
   reset()
-  navigateTo('/')
+  navigateTo('/landingpage')
 }
 
 onMounted(() => {
