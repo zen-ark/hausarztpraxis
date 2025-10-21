@@ -108,7 +108,7 @@ watch(() => props.content, (newContent) => {
 .message-wrapper {
   display: flex;
   flex-direction: column;
-  max-width: 680px;
+  max-width: min(68ch, 90vw);
   margin-bottom: 0.75rem;
   background: transparent;
   border: none;
@@ -140,7 +140,7 @@ watch(() => props.content, (newContent) => {
   border-radius: 18px;
   padding: 1rem 1.25rem;
   line-height: 1.5;
-  max-width: 600px;
+  max-width: 100%;
   margin-left: auto;
   margin-bottom: 0;
 }
@@ -163,7 +163,7 @@ watch(() => props.content, (newContent) => {
   box-shadow: var(--shadow-md);
   padding: 1rem 1.5rem;
   line-height: 1.6;
-  max-width: 700px;
+  max-width: 100%;
   margin-bottom: 0;
   transition: box-shadow 220ms var(--motion-smooth);
 }
@@ -249,7 +249,19 @@ watch(() => props.content, (newContent) => {
 /* Mobile responsive */
 @media (max-width: 768px) {
   .message-wrapper {
-    max-width: 90%;
+    max-width: 100%;
+  }
+  
+  .bubble.user,
+  .bubble.assistant {
+    padding: 0.75rem 1rem;
+  }
+}
+
+/* Tablet and desktop - maintain readable width */
+@media (min-width: 769px) {
+  .message-wrapper {
+    max-width: min(68ch, 90vw);
   }
 }
 </style>

@@ -580,6 +580,7 @@ const handleInfoClick = () => {
 @media (max-width: 768px) {
   .chat-content {
     padding: 0 16px;
+    max-width: 100%;
   }
   
   .composer-section {
@@ -605,6 +606,13 @@ const handleInfoClick = () => {
     margin-top: 60px; /* AppBar height */
     padding-top: 16px;
     padding-bottom: calc(env(safe-area-inset-bottom) + 56px + 120px);
+  }
+}
+
+/* Tablet and desktop - maintain centered layout */
+@media (min-width: 769px) {
+  .chat-content {
+    max-width: 820px;
   }
 }
 
@@ -732,7 +740,7 @@ const handleInfoClick = () => {
 }
 
 .chat-content {
-  max-width: 680px;
+  max-width: 820px;
   margin: 0 auto;
   padding: 24px 24px 0 24px;
   width: 100%;
