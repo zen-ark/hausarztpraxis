@@ -102,12 +102,10 @@ watch(() => props.visible, (newVisible) => {
     currentPhraseIndex.value = 0
     currentPhrase.value = phrases[0]
     
-    // Start rotation after a short delay
-    setTimeout(() => {
-      if (props.visible && !prefersReducedMotion.value) {
-        startPhraseRotation()
-      }
-    }, 2000)
+    // Start rotation immediately
+    if (props.visible && !prefersReducedMotion.value) {
+      startPhraseRotation()
+    }
   } else {
     stopPhraseRotation()
     displayedText.value = ''
