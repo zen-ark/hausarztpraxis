@@ -186,14 +186,14 @@ const statusChipState = computed(() => {
 
 
 // Check for first message from landing page and redirect if empty
-onMounted(() => {
+onMounted(async () => {
   if (typeof window !== 'undefined') {
     const firstMessage = sessionStorage.getItem('firstMessage')
     if (firstMessage) {
       // We have a first message, so don't redirect
       sessionStorage.removeItem('firstMessage')
       // Send directly - the send() function will add the user message
-      send(firstMessage)
+      await send(firstMessage)
       // Ensure scroll happens after message is added
       nextTick(() => {
         scrollToBottom()

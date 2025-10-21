@@ -102,6 +102,9 @@ watch(() => props.visible, (newVisible) => {
     currentPhraseIndex.value = 0
     currentPhrase.value = phrases[0]
     
+    // Start typewriter immediately for first phrase
+    startTypewriter(phrases[0])
+    
     // Start rotation immediately
     if (props.visible && !prefersReducedMotion.value) {
       startPhraseRotation()
