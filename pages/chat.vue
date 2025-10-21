@@ -218,60 +218,9 @@ onMounted(async () => {
         scrollToBottom()
       })
     } else if (messages.value.length === 0 && !busy.value) {
-      // Add sample messages for development preview
-      if (true) { // Show sample messages for testing
-        messages.value = [
-          {
-            localId: 'sample-1',
-            role: 'user',
-            content: 'Wie bestelle ich ein 24h-Blutdruckmessgerät?'
-          },
-          {
-            localId: 'sample-2', 
-            role: 'assistant',
-            content: '## 📋 Bestellprozess für 24h-BD Geräte\n\n**1. Bestellung:**\n- Im V-Shop oder telefonisch mit Kundennummer: 110677\n- Gerät muss mindestens 3 Tage vor dem Anziehen bestellt werden\n\n**2. Terminplanung:**\n- 1 Tag vor dem Anziehen Memo in MPA-Spalte eintragen\n- 15 Minuten für Anziehen und 15 Minuten für Ausziehen planen\n\n**3. Durchführung:**\n- Gerät am Morgen anziehen\n- Patient über Funktion aufklären\n- Am nächsten Tag ausziehen und Daten auslesen'
-          },
-          {
-            localId: 'sample-3',
-            role: 'user',
-            content: 'Was muss ich bei der Ergometrie beachten?'
-          },
-          {
-            localId: 'sample-4',
-            role: 'assistant',
-            content: '## 🩺 Ergometrie Durchführung\n\n**Vorbereitung:**\n- Patient soll 2 Stunden vorher nichts essen\n- Keine koffeinhaltigen Getränke\n- Medikamente wie besprochen einnehmen\n\n**Durchführung:**\n- Ruhe-EKG vor Beginn\n- Belastung stufenweise steigern\n- Blutdruck und Puls kontinuierlich messen\n- Patient über Symptome befragen\n\n**Nach der Untersuchung:**\n- 5 Minuten Nachbeobachtung\n- EKG und Blutdruck dokumentieren\n- Befund sofort auswerten'
-          },
-          {
-            localId: 'sample-5',
-            role: 'user',
-            content: 'Wie funktioniert die Langzeit-EKG Auswertung?'
-          },
-          {
-            localId: 'sample-6',
-            role: 'assistant',
-            content: '## ⚡ Langzeit-EKG Auswertung\n\n**1. Gerät auslesen:**\n- Nach 24-48 Stunden Gerät zurückgeben\n- Daten in MPA-System übertragen\n- Automatische Rhythmusanalyse starten\n\n**2. Manuelle Kontrolle:**\n- Arrhythmien markieren\n- ST-Strecken-Veränderungen prüfen\n- Pausen und Extrasystolen zählen\n\n**3. Befunderstellung:**\n- Rhythmusstörungen dokumentieren\n- Therapieempfehlungen aussprechen\n- Kontrolltermin vereinbaren\n\n**Wichtige Parameter:**\n- Durchschnittliche Herzfrequenz\n- Minimale und maximale HF\n- Anzahl der Extrasystolen\n- Pausen > 2 Sekunden'
-          },
-          {
-            localId: 'sample-7',
-            role: 'user',
-            content: 'Welche Vorbereitung braucht ein Patient für die Lungenfunktion?'
-          },
-          {
-            localId: 'sample-8',
-            role: 'assistant',
-            content: '## 💨 Lungenfunktion Vorbereitung\n\n**Patientenaufklärung:**\n- 4 Stunden vorher nicht rauchen\n- Keine bronchienerweiternden Medikamente\n- Normale Mahlzeiten erlaubt\n\n**Durchführung:**\n- Patient sitzt aufrecht\n- Nase mit Klammer verschließen\n- Mundstück fest umschließen\n- Anweisungen genau befolgen\n\n**Messungen:**\n- Vitalkapazität (VC)\n- Einsekundenkapazität (FEV1)\n- Tiffeneau-Index (FEV1/VC)\n- Peak-Flow-Messung\n\n**Qualitätskontrolle:**\n- Mindestens 3 gültige Messungen\n- Reproduzierbarkeit prüfen\n- Bei Abweichungen wiederholen'
-          }
-        ]
-        
-        // Ensure messages appear immediately without typing animation
-        nextTick(() => {
-          scrollToBottom()
-        })
-      } else {
-        // Only redirect if no first message AND no existing messages
-        // @ts-ignore
-        navigateTo('/landingpage')
-      }
+      // Only redirect if no first message AND no existing messages
+      // @ts-ignore
+      navigateTo('/landingpage')
     } else if (chatInputRef.value) {
       chatInputRef.value.focus()
     }
