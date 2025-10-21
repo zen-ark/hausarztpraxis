@@ -42,6 +42,8 @@ const currentPhraseComputed = computed(() => phrases[currentPhraseIndex.value])
 
 // Typewriter effect for current phrase
 const startTypewriter = (phrase: string) => {
+  if (!phrase) return
+  
   displayedText.value = ''
   isTyping.value = true
   
@@ -55,7 +57,7 @@ const startTypewriter = (phrase: string) => {
   let currentIndex = 0
   
   const typeNextChar = () => {
-    if (currentIndex < phrase.length) {
+    if (currentIndex < phrase.length && props.visible) {
       displayedText.value = phrase.substring(0, currentIndex + 1)
       currentIndex++
       setTimeout(typeNextChar, 30) // 30ms per character for natural typing speed
@@ -73,8 +75,9 @@ const startPhraseRotation = () => {
   
   phraseRotationInterval.value = setInterval(() => {
     currentPhraseIndex.value = (currentPhraseIndex.value + 1) % phrases.length
-    currentPhrase.value = phrases[currentPhraseIndex.value]
-    startTypewriter(currentPhrase.value)
+    const newPhrase = phrases[currentPhraseIndex.value]
+    currentPhrase.value = newPhrase
+    startTypewriter(newPhrase)
   }, 3000) // Change phrase every 3 seconds
 }
 
@@ -85,13 +88,19 @@ const stopPhraseRotation = () => {
   }
 }
 
+// Watch for phrase changes to trigger typewriter effect
+watch(() => currentPhrase.value, (newPhrase) => {
+  if (newPhrase && props.visible) {
+    startTypewriter(newPhrase)
+  }
+})
+
 // Watch for visibility changes
 watch(() => props.visible, (newVisible) => {
   if (newVisible) {
     // Reset to first phrase when becoming visible
     currentPhraseIndex.value = 0
     currentPhrase.value = phrases[0]
-    startTypewriter(currentPhrase.value)
     
     // Start rotation after a short delay
     setTimeout(() => {
@@ -135,6 +144,7 @@ onUnmounted(() => {
 <style scoped>
 .typing-indicator {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
   justify-content: flex-start;
   max-width: 680px;
