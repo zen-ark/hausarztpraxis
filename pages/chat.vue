@@ -194,9 +194,13 @@ onMounted(() => {
       sessionStorage.removeItem('firstMessage')
       // Send directly - the send() function will add the user message
       send(firstMessage)
+      // Ensure scroll happens after message is added
+      nextTick(() => {
+        scrollToBottom()
+      })
     } else if (messages.value.length === 0 && !busy.value) {
       // Add sample messages for development preview
-      if (true) { // Always show sample messages
+      if (false) { // Only show sample messages when not coming from landing page
         messages.value = [
           {
             localId: 'sample-1',
