@@ -761,7 +761,7 @@ const handleInfoClick = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 12vh;
+  height: 8vh;
   z-index: 5;
   pointer-events: none;
 }
@@ -792,7 +792,7 @@ const handleInfoClick = () => {
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
-  padding: 20px 0;
+  padding: 56px 0;
   background: transparent;
   position: fixed;
   bottom: 0;
