@@ -793,7 +793,7 @@ const handleInfoClick = () => {
 .composer-section {
   flex-shrink: 0;
   padding: 20px 0;
-  background: var(--bg);
+  background: transparent;
   position: relative;
   z-index: 2;
 }
