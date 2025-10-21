@@ -12,9 +12,7 @@ export default defineEventHandler(async (event) => {
   const { error } = await supa
     .from('feedback')
     .insert({ message_id: body.message_id, helpful: body.helpful, note: body.note ?? null })
-  if (error) throw createError({ statusCode: 500, statusMessage: error.message })
+  if (error) { throw createError({ statusCode: 500, statusMessage: error.message }) }
 
   return { ok: true }
 })
-
-

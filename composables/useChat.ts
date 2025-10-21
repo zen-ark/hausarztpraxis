@@ -27,11 +27,11 @@ export const useChat = () => {
   })
 
   const send = async (message: string) => {
-    if (busy.value || !message.trim()) return
+    if (busy.value || !message.trim()) { return }
 
     // Generate local ID for immediate UI update
     const localId = crypto.randomUUID()
-    
+
     // Push user message immediately
     const userMessage: ChatMessage = {
       localId,
@@ -39,7 +39,7 @@ export const useChat = () => {
       content: message
     }
     messages.value.push(userMessage)
-    
+
     // Create assistant message for streaming
     const assistantMessage: ChatMessage = {
       localId: crypto.randomUUID(),
@@ -48,16 +48,15 @@ export const useChat = () => {
       sources: []
     }
     messages.value.push(assistantMessage)
-    
+
     busy.value = true
     error.value = null
 
     try {
-      console.log('Sending chat request:', message)
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           question: message,
@@ -65,7 +64,6 @@ export const useChat = () => {
         })
       })
 
-      console.log('Response status:', response.status)
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
@@ -75,14 +73,12 @@ export const useChat = () => {
         throw new Error('No response body')
       }
 
-      console.log('Starting to read stream...')
       const decoder = new TextDecoder()
       let buffer = ''
 
       while (true) {
         const { done, value } = await reader.read()
         if (done) {
-          console.log('Stream ended')
           break
         }
 
@@ -94,31 +90,26 @@ export const useChat = () => {
           if (line.startsWith('data: ')) {
             try {
               const data = JSON.parse(line.slice(6))
-              console.log('Received data:', data)
-              
+
               if (data.sources) {
                 assistantMessage.sources = data.sources
-                console.log('Updated sources:', data.sources)
               } else if (data.token) {
                 assistantMessage.content += data.token
-                console.log('Added token:', data.token)
               } else if (data.done) {
-                console.log('Streaming complete')
                 break
               } else if (data.error) {
                 throw new Error(data.error)
               }
-            } catch (parseError) {
+            } catch (parseError: unknown) {
               console.warn('Failed to parse SSE data:', parseError)
             }
           }
         }
       }
-
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Chat API error:', err)
       error.value = 'Ups — Anfrage fehlgeschlagen. Bitte erneut senden.'
-      
+
       // Update assistant message with error
       assistantMessage.content = error.value
     } finally {
@@ -150,7 +141,7 @@ export const useChat = () => {
     messages.value = []
     busy.value = false
     error.value = null
-    
+
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('conversationId')
       sessionStorage.removeItem('firstMessage')
@@ -168,4 +159,3 @@ export const useChat = () => {
     reset
   }
 }
-

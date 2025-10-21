@@ -2,8 +2,8 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js'
 
 let clientSingleton: SupabaseClient | null = null
 
-export function getSupabaseServer(): SupabaseClient {
-  if (clientSingleton) return clientSingleton
+export function getSupabaseServer (): SupabaseClient {
+  if (clientSingleton) { return clientSingleton }
 
   const config = useRuntimeConfig()
   const url = config.public.supabaseUrl
@@ -23,5 +23,3 @@ export function getSupabaseServer(): SupabaseClient {
 
   return clientSingleton
 }
-
-

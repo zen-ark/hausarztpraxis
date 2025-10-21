@@ -2,8 +2,8 @@ import { getSupabaseServer } from '~/server/utils/supabaseServer'
 
 let cachedDatasetId: string | null = null
 
-export async function ensureDatasetId(): Promise<string> {
-  if (cachedDatasetId) return cachedDatasetId
+export async function ensureDatasetId (): Promise<string> {
+  if (cachedDatasetId) { return cachedDatasetId }
 
   const config = useRuntimeConfig()
   const datasetName = config.datasetName || 'Hausarztpraxis Thun – Demo'
@@ -26,5 +26,3 @@ export async function ensureDatasetId(): Promise<string> {
   cachedDatasetId = data.id
   return cachedDatasetId
 }
-
-

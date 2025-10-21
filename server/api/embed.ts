@@ -1,19 +1,18 @@
-import { defineEventHandler, getMethod, createError } from 'h3'
-import { createClient } from '@supabase/supabase-js'
 import { readFile, readdir } from 'fs/promises'
 import { join } from 'path'
-import { fileURLToPath } from 'url'
+import { createClient } from '@supabase/supabase-js'
+import { defineEventHandler, getMethod, createError } from 'h3'
 import OpenAI from 'openai'
 
 const ORG_ID = '344a1d93-1527-40e2-a809-319d83ba0bda'
 
 export default defineEventHandler(async (event) => {
   console.log('[embed] route hit', getMethod(event))
-  
+
   if (getMethod(event) === 'GET') {
     return { status: 'ready' }
   }
-  
+
   if (getMethod(event) !== 'POST') {
     throw createError({
       statusCode: 405,
@@ -26,7 +25,7 @@ export default defineEventHandler(async (event) => {
     const SUPABASE_URL = config.supabaseUrl
     const SUPABASE_SERVICE_ROLE_KEY = config.supabaseServiceRoleKey
     const OPENAI_API_KEY = config.openaiApiKey
-    
+
     // Check if required config is available
     if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !OPENAI_API_KEY) {
       throw createError({
@@ -34,7 +33,7 @@ export default defineEventHandler(async (event) => {
         statusMessage: 'Supabase URL/Key or OpenAI key not configured. Check .env.local and nuxt.config.ts runtimeConfig.'
       })
     }
-    
+
     // Initialize Supabase client with service role key
     const supabase = createClient(
       SUPABASE_URL,
@@ -55,11 +54,11 @@ export default defineEventHandler(async (event) => {
     })
     console.log('[embed] inserting for org', ORG_ID)
     console.log('🚀 Starting document ingestion...')
-    
+
     // Read all files from ./data/mpa_docs/
     const docsDir = join(process.cwd(), 'data', 'mpa_docs')
     const files = await readdir(docsDir)
-    const markdownFiles = files.filter(file => 
+    const markdownFiles = files.filter(file =>
       file.endsWith('.md') || file.endsWith('.txt')
     )
 
@@ -68,11 +67,11 @@ export default defineEventHandler(async (event) => {
     for (const fileName of markdownFiles) {
       try {
         console.log(`\n📄 Processing: ${fileName}`)
-        
+
         // Read file content
         const filePath = join(docsDir, fileName)
         const content = await readFile(filePath, 'utf-8')
-        
+
         // Insert document record
         const { data: docData, error: docError } = await supabase
           .from('documents')
@@ -100,7 +99,7 @@ export default defineEventHandler(async (event) => {
         const chunkData = []
         for (let i = 0; i < chunks.length; i++) {
           const chunk = chunks[i]
-          
+
           try {
             // Get embedding from OpenAI
             const embedding = await getEmbedding(chunk, OPENAI_API_KEY)
@@ -109,10 +108,9 @@ export default defineEventHandler(async (event) => {
               doc_id: docId,
               chunk_index: i,
               content: chunk,
-              embedding: embedding
+              embedding
             })
             console.log(`  ✅ Chunk ${i + 1}/${chunks.length} processed`)
-            
           } catch (chunkError) {
             console.error(`❌ Error processing chunk ${i} for ${fileName}:`, chunkError)
             continue
@@ -131,7 +129,6 @@ export default defineEventHandler(async (event) => {
         }
 
         console.log(`✅ Completed processing ${fileName} (${chunks.length} chunks)`)
-        
       } catch (fileError) {
         console.error(`❌ Error processing file ${fileName}:`, fileError)
         continue
@@ -139,12 +136,11 @@ export default defineEventHandler(async (event) => {
     }
 
     console.log('\n✅ Ingestion complete')
-    
+
     return {
       success: true,
       message: 'Document ingestion completed successfully'
     }
-
   } catch (e) {
     console.error('[embed] failed', e)
     throw createError({
@@ -155,41 +151,41 @@ export default defineEventHandler(async (event) => {
 })
 
 // Simple word-based chunking (approximates token count)
-function splitIntoChunks(text: string, targetTokens: number, overlapTokens: number): string[] {
+function splitIntoChunks (text: string, targetTokens: number, overlapTokens: number): string[] {
   const words = text.split(/\s+/)
   const wordsPerToken = 0.75 // Rough approximation: 1 token ≈ 0.75 words
   const targetWords = Math.floor(targetTokens * wordsPerToken)
   const overlapWords = Math.floor(overlapTokens * wordsPerToken)
-  
+
   const chunks: string[] = []
   let start = 0
-  
+
   while (start < words.length) {
     const end = Math.min(start + targetWords, words.length)
     const chunk = words.slice(start, end).join(' ')
-    
+
     if (chunk.trim()) {
       chunks.push(chunk.trim())
     }
-    
-    if (end >= words.length) break
-    
+
+    if (end >= words.length) { break }
+
     // Move start position with overlap
     start = end - overlapWords
   }
-  
+
   return chunks
 }
 
 // Get embedding from OpenAI API
-async function getEmbedding(text: string, apiKey: string): Promise<number[]> {
+async function getEmbedding (text: string, apiKey: string): Promise<number[]> {
   const openai = new OpenAI({ apiKey })
-  
+
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-small',
     input: text,
     dimensions: 1536
   })
-  
+
   return response.data[0].embedding
 }

@@ -4,11 +4,11 @@ import OpenAI from 'openai'
 
 export default defineEventHandler(async (event) => {
   console.log('[chat] route hit', getMethod(event))
-  
+
   if (getMethod(event) === 'GET') {
     return { status: 'ready' }
   }
-  
+
   if (getMethod(event) !== 'POST') {
     throw createError({
       statusCode: 405,
@@ -30,7 +30,7 @@ export default defineEventHandler(async (event) => {
 
     console.log('[chat] original question:', question)
 
-    // @ts-ignore
+    // @ts-expect-error
     const config = useRuntimeConfig()
     const { supabaseUrl, supabaseServiceRoleKey, openaiApiKey } = config
 
@@ -141,7 +141,7 @@ Do not add any frontend post-processing of text (no regex cleanups). The UI shou
 
     // Create streaming response
     const stream = new ReadableStream({
-      async start(controller) {
+      async start (controller) {
         try {
           // Send sources first
           controller.enqueue(new TextEncoder().encode(`data: ${JSON.stringify({ sources })}\n\n`))
@@ -177,7 +177,6 @@ Do not add any frontend post-processing of text (no regex cleanups). The UI shou
     })
 
     return stream
-
   } catch (e) {
     console.error('[chat] failed', e)
     throw createError({

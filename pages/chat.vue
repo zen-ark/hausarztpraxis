@@ -64,7 +64,6 @@ import TypingIndicator from '../components/TypingIndicator.vue'
 import AppBar from '../components/AppBar.vue'
 import IntroCard from '../components/IntroCard.vue'
 import ChatInput from '../components/ChatInput.vue'
-import StatusChip from '../components/StatusChip.vue'
 
 // Use chat composable
 const { conversationId, messages, busy, error, send, sendFeedback, clearError, reset } = useChat()
@@ -297,7 +296,6 @@ const handleNewChat = () => {
 
 const handleInfoClick = () => {
   // TODO: Implement info modal
-  console.log('Info clicked')
 }
 
 

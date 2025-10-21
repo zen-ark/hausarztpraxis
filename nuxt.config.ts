@@ -1,5 +1,5 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-// @ts-ignore
+// @ts-expect-error
 export default defineNuxtConfig({
   devtools: { enabled: true },
   app: {
