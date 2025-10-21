@@ -102,6 +102,9 @@
   --motion-smooth: cubic-bezier(.2,.8,.2,1);
   --motion-spring: cubic-bezier(.4,0,.2,1);
   --dur-input: 180ms;
+  
+  /* Ambient effects */
+  --ambient-blur: 18px;
 }
 
 * {

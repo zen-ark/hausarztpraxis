@@ -6,33 +6,39 @@
 
     <!-- Scrollable Chat Content -->
     <main ref="chatScrollContainer" class="chat-scroll-container">
-      <div class="chat-content">
-        <!-- Intro Card (shows initially, collapses after first assistant message) -->
-        <IntroCard 
-          :is-collapsed="hasFirstAssistantMessage" 
-          @info="handleInfoClick"
-        />
+      <div ref="chatContentWrapper" class="chat-content-wrapper">
+        <!-- Ambient layers -->
+        <div data-ambient="blur" class="ambient-blur"></div>
+        <div data-ambient="gradient" class="ambient-gradient"></div>
         
-        <!-- Large central orb for thinking state -->
-        <div v-if="busy && !messages.length" class="thinking-state">
-          <OrbCanvas :size="200" state="thinking" />
-          <p class="thinking-text">Ich suche eine passende Antwort</p>
+        <div class="chat-content">
+          <!-- Intro Card (shows initially, collapses after first assistant message) -->
+          <IntroCard 
+            :is-collapsed="hasFirstAssistantMessage" 
+            @info="handleInfoClick"
+          />
+          
+          <!-- Large central orb for thinking state -->
+          <div v-if="busy && !messages.length" class="thinking-state">
+            <OrbCanvas :size="200" state="thinking" />
+            <p class="thinking-text">Ich suche eine passende Antwort</p>
+          </div>
+          
+          <div v-if="messages.length" class="messages">
+            <template v-for="(m, index) in messages" :key="m.localId">
+              <ChatBubble
+                :role="m.role"
+                :content="m.content"
+                :citations="m.citations"
+                :message-id="m.id"
+                @feedback="handleFeedback"
+              />
+            </template>
+          </div>
+          
+          <!-- Typing indicator - moved outside messages block -->
+          <TypingIndicator :visible="busy" />
         </div>
-        
-        <div v-if="messages.length" class="messages">
-          <template v-for="(m, index) in messages" :key="m.localId">
-            <ChatBubble
-              :role="m.role"
-              :content="m.content"
-              :citations="m.citations"
-              :message-id="m.id"
-              @feedback="handleFeedback"
-            />
-          </template>
-        </div>
-        
-        <!-- Typing indicator - moved outside messages block -->
-        <TypingIndicator :visible="busy" />
       </div>
     </main>
 
@@ -78,9 +84,69 @@ const isStreaming = ref(false)
 const hasError = ref(false)
 const isOffline = ref(false)
 
+// Ambient layers state
+const ambientBlurHeight = ref('18vh')
+const ambientGradientHeight = ref('22vh')
+const chatContentWrapper = ref<HTMLElement | null>(null)
+
 // Feedback handler
 const handleFeedback = (messageId: string, helpful: boolean) => {
   sendFeedback(messageId, helpful)
+}
+
+// Ambient layers height calculation
+const updateAmbientHeights = () => {
+  if (!chatContentWrapper.value || !chatInputRef.value) return
+  
+  const wrapper = chatContentWrapper.value
+  const inputElement = chatInputRef.value.$el || chatInputRef.value
+  
+  if (!inputElement) return
+  
+  const wrapperRect = wrapper.getBoundingClientRect()
+  const inputRect = inputElement.getBoundingClientRect()
+  
+  // Calculate input center relative to wrapper
+  const inputCenterY = inputRect.top + (inputRect.height / 2) - wrapperRect.top
+  
+  // Get viewport width for responsive calculations
+  const viewportWidth = window.innerWidth
+  
+  // Calculate base heights based on breakpoints
+  let blurHeight, gradientHeight
+  
+  if (viewportWidth >= 1024) {
+    // Desktop
+    blurHeight = Math.min(22, Math.max(14, 18)) // clamp(14vh, 18vh, 22vh)
+    gradientHeight = Math.min(28, Math.max(18, 22)) // clamp(18vh, 22vh, 28vh)
+  } else if (viewportWidth >= 640) {
+    // Tablet
+    blurHeight = Math.min(26, Math.max(16, 20)) // clamp(16vh, 20vh, 26vh)
+    gradientHeight = Math.min(30, Math.max(20, 24)) // clamp(20vh, 24vh, 30vh)
+  } else {
+    // Mobile
+    blurHeight = Math.min(30, Math.max(18, 22)) // clamp(18vh, 22vh, 30vh)
+    gradientHeight = Math.min(34, Math.max(22, 28)) // clamp(22vh, 28vh, 34vh)
+  }
+  
+  // Convert to pixels and cap at input center
+  const blurHeightPx = (blurHeight / 100) * window.innerHeight
+  const gradientHeightPx = (gradientHeight / 100) * window.innerHeight
+  
+  // Cap heights at input center
+  const maxBlurHeight = Math.min(blurHeightPx, inputCenterY)
+  const maxGradientHeight = Math.min(gradientHeightPx, inputCenterY)
+  
+  // Convert back to vh and set CSS variables
+  const finalBlurHeight = (maxBlurHeight / window.innerHeight) * 100
+  const finalGradientHeight = (maxGradientHeight / window.innerHeight) * 100
+  
+  ambientBlurHeight.value = `${finalBlurHeight}vh`
+  ambientGradientHeight.value = `${finalGradientHeight}vh`
+  
+  // Set CSS custom properties
+  wrapper.style.setProperty('--ambient-blur-h', ambientBlurHeight.value)
+  wrapper.style.setProperty('--ambient-grad-h', ambientGradientHeight.value)
 }
 
 // Auto-scroll functionality
@@ -269,6 +335,7 @@ onMounted(async () => {
   window.addEventListener('keydown', handleKeydown)
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown)
+    window.removeEventListener('resize', handleResize)
     if (chatScrollContainer.value) {
       chatScrollContainer.value.removeEventListener('scroll', handleScroll)
     }
@@ -279,8 +346,19 @@ onMounted(async () => {
     chatScrollContainer.value.addEventListener('scroll', handleScroll)
   }
   
+  // Add resize listener for ambient layers
+  const handleResize = () => {
+    updateAmbientHeights()
+  }
+  window.addEventListener('resize', handleResize)
+  
   // Initial scroll to bottom
   scrollToBottom()
+  
+  // Initial ambient heights calculation
+  nextTick(() => {
+    updateAmbientHeights()
+  })
 })
 
 // Helper functions for source validation
@@ -739,11 +817,50 @@ const handleInfoClick = () => {
   z-index: 10;
 }
 
+.chat-content-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .chat-content {
   max-width: 820px;
   margin: 0 auto;
   padding: 24px 24px 0 24px;
   width: 100%;
+  position: relative;
+  z-index: 3;
+}
+
+/* Ambient layers */
+.ambient-blur {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--ambient-blur-h, 18vh);
+  backdrop-filter: blur(var(--ambient-blur, 18px)) saturate(1.05);
+  -webkit-backdrop-filter: blur(var(--ambient-blur, 18px)) saturate(1.05);
+  pointer-events: none;
+  z-index: 1;
+  will-change: transform, backdrop-filter;
+  contain: layout paint;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.ambient-gradient {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: var(--ambient-grad-h, 22vh);
+  background: linear-gradient(to top, 
+    var(--bg) 70%, 
+    var(--bg) 80%, 
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  will-change: transform;
+  contain: layout paint;
 }
 
 /* Fixed Input Bar */
