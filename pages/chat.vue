@@ -9,9 +9,6 @@
       <div ref="chatContentWrapper" class="chat-content-wrapper">
         <!-- Chat column container -->
         <div ref="chatColumn" id="chat-column" class="chat-column">
-          <!-- Ambient gradient layer -->
-          <div data-ambient="gradient" class="ambient-gradient"></div>
-          
           <div class="chat-content">
           <!-- Intro Card (shows initially, collapses after first assistant message) -->
           <IntroCard 
@@ -86,8 +83,7 @@ const isStreaming = ref(false)
 const hasError = ref(false)
 const isOffline = ref(false)
 
-// Ambient layers state
-const gradientHeight = ref('22vh')
+// Chat content wrapper ref
 const chatContentWrapper = ref<HTMLElement | null>(null)
 const chatColumn = ref<HTMLElement | null>(null)
 
@@ -96,49 +92,6 @@ const handleFeedback = (messageId: string, helpful: boolean) => {
   sendFeedback(messageId, helpful)
 }
 
-// Ambient gradient height calculation
-const updateGradientHeight = () => {
-  if (!chatColumn.value || !chatInputRef.value) return
-  
-  const column = chatColumn.value
-  const inputElement = chatInputRef.value.$el || chatInputRef.value
-  
-  if (!inputElement) return
-  
-  const columnRect = column.getBoundingClientRect()
-  const inputRect = inputElement.getBoundingClientRect()
-  
-  // Calculate input center relative to column
-  const inputCenterY = inputRect.top + (inputRect.height / 2) - columnRect.top
-  
-  // Get viewport width for responsive calculations
-  const viewportWidth = window.innerWidth
-  
-  // Calculate base height based on breakpoints
-  let baseHeight
-  
-  if (viewportWidth >= 1024) {
-    // Desktop: clamp(18vh, 22vh, 28vh)
-    baseHeight = Math.min(28, Math.max(18, 22))
-  } else if (viewportWidth >= 640) {
-    // Tablet: clamp(20vh, 24vh, 30vh)
-    baseHeight = Math.min(30, Math.max(20, 24))
-  } else {
-    // Mobile: clamp(22vh, 28vh, 34vh)
-    baseHeight = Math.min(34, Math.max(22, 28))
-  }
-  
-  // Convert to pixels and cap at input center
-  const baseHeightPx = (baseHeight / 100) * window.innerHeight
-  const maxHeight = Math.min(baseHeightPx, inputCenterY)
-  
-  // Convert back to vh and set CSS variable
-  const finalHeight = (maxHeight / window.innerHeight) * 100
-  gradientHeight.value = `${finalHeight}vh`
-  
-  // Set CSS custom property
-  column.style.setProperty('--grad-h', gradientHeight.value)
-}
 
 // Auto-scroll functionality
 const shouldAutoScroll = ref(true)
@@ -326,7 +279,9 @@ onMounted(async () => {
   window.addEventListener('keydown', handleKeydown)
   onUnmounted(() => {
     window.removeEventListener('keydown', handleKeydown)
-    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('resize', () => {
+    // Handle resize if needed
+  })
     if (chatScrollContainer.value) {
       chatScrollContainer.value.removeEventListener('scroll', handleScroll)
     }
@@ -338,18 +293,12 @@ onMounted(async () => {
   }
   
   // Add resize listener for ambient layers
-  const handleResize = () => {
-    updateGradientHeight()
-  }
-  window.addEventListener('resize', handleResize)
+  window.addEventListener('resize', () => {
+    // Handle resize if needed
+  })
   
   // Initial scroll to bottom
   scrollToBottom()
-  
-  // Initial gradient height calculation
-  nextTick(() => {
-    updateGradientHeight()
-  })
 })
 
 // Helper functions for source validation
@@ -797,27 +746,15 @@ const handleInfoClick = () => {
   z-index: 3;
 }
 
-/* Ambient gradient layer */
-.ambient-gradient {
-  position: absolute;
-  inset-inline: 0;
-  bottom: 0;
-  height: var(--grad-h, 22vh);
-  background: linear-gradient(to top, 
-    var(--bg) 0%, 
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 1;
-  will-change: transform;
-  contain: layout paint;
-}
 
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
   padding: 20px 0;
-  background: var(--bg);
+  background: rgba(229, 236, 247, 0.8);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(229, 236, 247, 0.2);
   position: relative;
   z-index: 2;
 }

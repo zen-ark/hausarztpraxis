@@ -1,7 +1,5 @@
 <template>
   <div class="landing-page">
-    <!-- Background gradient -->
-    <div class="background-gradient"></div>
     
     <!-- Main content -->
     <main class="hero-content">
@@ -130,42 +128,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-.background-gradient {
-  position: absolute;
-  inset: 0;
-  background: var(--bg-ambient);
-  z-index: -1;
-}
-
-/* Layer 1 (bottom): Blur overlay */
-.background-gradient::before {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 5vh;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* Layer 2 (top): Gradient overlay */
-.background-gradient::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 5vh;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    rgba(229, 236, 247, 1) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
-}
 
 /* ===================================
    MAIN CONTENT - Centered with Flexbox
@@ -231,7 +193,10 @@ onMounted(() => {
 .composer-card {
   width: 100%;
   max-width: 640px;
-  background: transparent;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 0;
   transition: all 250ms cubic-bezier(.2,.8,.2,1);
 }
