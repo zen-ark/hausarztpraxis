@@ -60,7 +60,7 @@ const startTypewriter = (phrase: string) => {
     if (currentIndex < phrase.length && props.visible) {
       displayedText.value = phrase.substring(0, currentIndex + 1)
       currentIndex++
-      setTimeout(typeNextChar, 30) // 30ms per character for natural typing speed
+      setTimeout(typeNextChar, 36) // 36ms per character (20% slower than 30ms)
     } else {
       isTyping.value = false
     }
@@ -162,7 +162,7 @@ onUnmounted(() => {
 .typing-bubble {
   background: #FFFFFF;
   color: var(--text);
-  border-radius: 18px;
+  border-radius: 400px;
   box-shadow: var(--shadow-md);
   padding: 1rem 1.5rem;
   line-height: 1.6;
@@ -179,6 +179,7 @@ onUnmounted(() => {
   color: var(--text-subtle);
   font-weight: 400;
   line-height: 1.5;
+  opacity: 0.8;
   transition: opacity 200ms ease-in-out;
 }
 
