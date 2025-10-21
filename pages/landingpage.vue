@@ -144,7 +144,13 @@ onMounted(() => {
   left: 0;
   right: 0;
   height: 200px;
-  background: radial-gradient(ellipse at center bottom, rgba(17, 74, 126, 0.03) 0%, transparent 70%);
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(229, 236, 247, 0.95) 100%
+  );
+  filter: blur(2px);
+  pointer-events: none;
+  z-index: -1;
 }
 
 /* ===================================
