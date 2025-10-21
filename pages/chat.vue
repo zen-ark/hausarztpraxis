@@ -609,10 +609,6 @@ const handleInfoClick = () => {
   padding: 12px 24px;
   font-size: 12px;
   color: var(--grey-600);
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
   z-index: 20;
   margin: 0;
 }
@@ -770,51 +766,61 @@ const handleInfoClick = () => {
 }
 
 
-/* Bottom Ambient Section */
+/* Bottom ambient strip (no content inside) */
 .bottom-ambient {
   position: fixed;
-  bottom: 0;
   left: 0;
   right: 0;
-  height: 8vh;
-  z-index: 5;
+  bottom: 0;
+  height: 12vh;            /* adjust footprint */
+  z-index: 2;             /* keep below your input */
+  pointer-events: none;    /* never block clicks */
+}
+
+/* Soft blur near the bottom edge */
+.bottom-ambient::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 10vh;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+
+  /* Safari needs a tiny alpha to render blur */
+  background: rgba(255,255,255,0.001);
+
+  /* Feather the top of the blur band */
+  -webkit-mask-image: linear-gradient(to top, black 60%, transparent 100%);
+  mask-image: linear-gradient(to top, black 60%, transparent 100%);
+}
+
+/* Upward-fading gradient (solid at bottom → transparent to top) */
+.bottom-ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   pointer-events: none;
-}
-
-.ambient-blur {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  background: transparent;
-  height: fill-available;
-}
-
-.ambient-gradient {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(to bottom,
-    transparent 0%,
-    var(--bg) 100%
+  background: linear-gradient(
+    to top,
+    var(--bg) 0%,
+    var(--bg) 20%,
+    transparent 100%
   );
+  height: 12vh;
 }
+
+
 
 /* Fixed Input Bar */
 .composer-section {
   flex-shrink: 0;
-  padding: 64px 0 40px 0; /* Add bottom padding for footer note */
+  padding: 0px 0 72px 0; /* Add bottom padding for footer note */
   background: transparent;
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 15;
+  z-index: 50;
 }
 
 
