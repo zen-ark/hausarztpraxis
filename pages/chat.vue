@@ -686,10 +686,44 @@ const handleInfoClick = () => {
   /* Hide scrollbar */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
+  background: var(--bg);
+  /* CSS Mask for fade effect */
+  -webkit-mask-image: linear-gradient(to bottom,
+    black 0%,
+    black calc(100% - 200px),
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom,
+    black 0%,
+    black calc(100% - 200px),
+    transparent 100%
+  );
 }
 
 .chat-scroll-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* Progressive blur overlay */
+.chat-scroll-container::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 20%,
+    rgba(255, 255, 255, 0.15) 40%,
+    rgba(255, 255, 255, 0.3) 60%,
+    rgba(255, 255, 255, 0.5) 80%,
+    rgba(255, 255, 255, 0.8) 100%
+  );
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .chat-content {
@@ -704,6 +738,8 @@ const handleInfoClick = () => {
   flex-shrink: 0;
   padding: 20px 0;
   background: var(--bg);
+  position: relative;
+  z-index: 2;
 }
 
 
