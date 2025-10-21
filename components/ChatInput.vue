@@ -94,8 +94,7 @@ defineExpose({
 .input-group {
   display: flex;
   align-items: center;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(8px);
+  background: transparent;
   border: 1px solid rgba(0,0,0,0.02);
   border-radius: var(--r-input);
   padding: 16px 12px;
