@@ -1,0 +1,42 @@
+name: Deploy to Live Site
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  deploy-live:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build for production
+      run: npm run build
+      
+    - name: Deploy to Live Site
+      run: |
+        echo "🚀 Deploying to LIVE site..."
+        echo "Environment: PRODUCTION"
+        echo "Branch: main"
+        # Add your live deployment commands here
+        # Examples:
+        # - Deploy to Vercel: vercel --prod
+        # - Deploy to Netlify: netlify deploy --prod
+        # - Deploy to your server: rsync, scp, etc.
+        
+    - name: Notify deployment
+      run: |
+        echo "✅ Live site deployment completed!"
+        echo "🌐 Live site should be available at your production URL"
