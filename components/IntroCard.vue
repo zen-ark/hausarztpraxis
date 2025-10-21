@@ -13,23 +13,24 @@
       </div>
     </div>
     
-    <button 
-      v-else
-      class="intro-pill"
-      @click="handleInfoClick"
-      aria-label="Über diesen Assistenten"
-    >
-      <div class="pill-icon">
-        <OrbCanvas :size="16" state="idle" />
+    <div v-else class="pill-container">
+      <button 
+        class="intro-pill"
+        @click="handleInfoClick"
+        aria-label="Über diesen Assistenten"
+      >
+        <span class="pill-text">Nur Praxis-Dokumente</span>
+      </button>
+      
+      <div class="demo-pill">
+        <span class="pill-text">Demo</span>
       </div>
-      <span class="pill-text">Nur Praxis-Dokumente</span>
-    </button>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import OrbCanvas from './OrbCanvas.vue'
 
 const props = defineProps<{
   isCollapsed: boolean
@@ -84,10 +85,16 @@ const handleInfoClick = () => {
   color: var(--blue-800);
 }
 
-.intro-pill {
+.pill-container {
   display: flex;
   align-items: center;
   gap: 8px;
+  animation: pillSlideIn 200ms var(--motion) ease-out;
+}
+
+.intro-pill {
+  display: flex;
+  align-items: center;
   background: rgba(255, 255, 255, 0.9);
   color: var(--blue-700);
   border: 1px solid var(--blue-200);
@@ -99,7 +106,20 @@ const handleInfoClick = () => {
   transition: all var(--dur) var(--motion);
   backdrop-filter: blur(8px);
   box-shadow: var(--shadow-sm);
-  animation: pillSlideIn 200ms var(--motion) ease-out;
+}
+
+.demo-pill {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--r-pill);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+  box-shadow: var(--shadow-sm);
 }
 
 .intro-pill:hover {
@@ -114,12 +134,6 @@ const handleInfoClick = () => {
   outline-offset: 2px;
 }
 
-.pill-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
 
 .pill-text {
   white-space: nowrap;
@@ -182,7 +196,8 @@ const handleInfoClick = () => {
     font-size: 13px;
   }
   
-  .intro-pill {
+  .intro-pill,
+  .demo-pill {
     padding: 5px 10px;
     font-size: 11px;
   }
@@ -198,8 +213,12 @@ const handleInfoClick = () => {
     animation: none;
   }
   
-  .intro-pill {
+  .pill-container {
     animation: none;
+  }
+  
+  .intro-pill,
+  .demo-pill {
     transition: opacity 140ms ease;
   }
   
